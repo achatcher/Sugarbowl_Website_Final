@@ -6,9 +6,9 @@
 class ApiService {
     constructor() {
         this.cache = new Map();
-        this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
+        this.cacheTimeout = 5 * 60 * 1000; 
         this.graphqlEndpoint = 'https://364vw33yefgirm4lhvwegdop4a.appsync-api.us-east-2.amazonaws.com/graphql';
-        this.apiKey = 'PASTE_YOUR_API_KEY_HERE'; // Replace with the API key from Step 1
+        this.apiKey = 'da2-qllb6vubvjgx3c6ipze66327ii'; 
     }
 
     async makeGraphQLRequest(query, variables = {}) {
