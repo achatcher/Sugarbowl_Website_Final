@@ -1,6 +1,6 @@
 /**
  * API Service for SugarBowl Customer Site
- * Handles public read-only access to burger and menu data using direct HTTP requests
+ * Simple HTTP requests with API key authentication
  */
 
 class ApiService {
@@ -8,19 +8,16 @@ class ApiService {
         this.cache = new Map();
         this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
         this.graphqlEndpoint = 'https://364vw33yefgirm4lhvwegdop4a.appsync-api.us-east-2.amazonaws.com/graphql';
-        this.region = 'us-east-2';
+        this.apiKey = 'PASTE_YOUR_API_KEY_HERE'; // Replace with the API key from Step 1
     }
 
-    /**
-     * Make GraphQL request with AWS IAM authentication
-     */
     async makeGraphQLRequest(query, variables = {}) {
         try {
             const response = await fetch(this.graphqlEndpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-api-key': 'your-api-key-here' // We'll need to set this up
+                    'x-api-key': this.apiKey
                 },
                 body: JSON.stringify({
                     query: query,
@@ -28,16 +25,10 @@ class ApiService {
                 })
             });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
             const data = await response.json();
-            
             if (data.errors) {
                 throw new Error(`GraphQL error: ${JSON.stringify(data.errors)}`);
             }
-
             return data;
         } catch (error) {
             console.error('GraphQL request failed:', error);
@@ -45,13 +36,9 @@ class ApiService {
         }
     }
 
-    /**
-     * Get current burger special
-     */
     async getCurrentBurger() {
         const cacheKey = 'current-burger';
         
-        // Check cache first
         if (this.cache.has(cacheKey)) {
             const cached = this.cache.get(cacheKey);
             if (Date.now() - cached.timestamp < this.cacheTimeout) {
@@ -79,16 +66,11 @@ class ApiService {
             let burger = result.data.getBurger;
             
             if (burger && burger.imageKey && !burger.imageUrl) {
-                // Build S3 URL for the image
                 burger.imageUrl = `https://sugarbowl-admin-imagesc1ae6-dev.s3.us-east-2.amazonaws.com/public/${burger.imageKey}`;
             }
 
             if (burger) {
-                // Cache the result
-                this.cache.set(cacheKey, {
-                    data: burger,
-                    timestamp: Date.now()
-                });
+                this.cache.set(cacheKey, { data: burger, timestamp: Date.now() });
             }
 
             return burger;
@@ -98,13 +80,9 @@ class ApiService {
         }
     }
 
-    /**
-     * Get published menu items by category
-     */
     async getMenuItems(category = null) {
         const cacheKey = `menu-items-${category || 'all'}`;
         
-        // Check cache first
         if (this.cache.has(cacheKey)) {
             const cached = this.cache.get(cacheKey);
             if (Date.now() - cached.timestamp < this.cacheTimeout) {
@@ -133,19 +111,9 @@ class ApiService {
         }
 
         try {
-            const result = await this.makeGraphQLRequest(query, { 
-                filter: filter,
-                limit: 100
-            });
-
+            const result = await this.makeGraphQLRequest(query, { filter: filter, limit: 100 });
             const items = result.data.listMenuItems.items || [];
-
-            // Cache the result
-            this.cache.set(cacheKey, {
-                data: items,
-                timestamp: Date.now()
-            });
-
+            this.cache.set(cacheKey, { data: items, timestamp: Date.now() });
             return items;
         } catch (error) {
             console.error('Error fetching menu items:', error);
@@ -153,39 +121,23 @@ class ApiService {
         }
     }
 
-    /**
-     * Get menu items grouped by category
-     */
     async getMenuItemsByCategory() {
         const allItems = await this.getMenuItems();
         
-        const categories = {
-            appetizers: [],
-            burgers: [],
-            sandwiches: [],
-            wraps: [],
-            mains: [],
-            drinks: []
+        return {
+            appetizers: allItems.filter(item => item.category === 'appetizers'),
+            burgers: allItems.filter(item => item.category === 'burgers'),
+            sandwiches: allItems.filter(item => item.category === 'sandwiches'),
+            wraps: allItems.filter(item => item.category === 'wraps'),
+            mains: allItems.filter(item => item.category === 'mains'),
+            drinks: allItems.filter(item => item.category === 'drinks')
         };
-
-        allItems.forEach(item => {
-            if (categories[item.category]) {
-                categories[item.category].push(item);
-            }
-        });
-
-        return categories;
     }
 
-    /**
-     * Clear cache
-     */
     clearCache() {
         this.cache.clear();
-        console.log('API cache cleared');
     }
 }
 
-// Create singleton instance
 const apiService = new ApiService();
 export default apiService;
