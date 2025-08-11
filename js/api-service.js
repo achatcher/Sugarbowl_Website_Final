@@ -2,10 +2,12 @@
  * API Service for SugarBowl Customer Site
  * Handles public read-only access to burger and menu data
  */
-import { Amplify } from 'https://cdn.skypack.dev/aws-amplify@6.0.0';
-import { generateClient } from 'https://cdn.skypack.dev/aws-amplify@6.0.0/api';
-import { getUrl } from 'https://cdn.skypack.dev/aws-amplify@6.0.0/storage';
+import amplify from 'https://cdn.skypack.dev/aws-amplify@6.0.0';
 import awsConfig from './aws-config.js';
+
+const { Amplify } = amplify;
+const { generateClient } = amplify.API;
+const { getUrl } = amplify.Storage;
 
 // Initialize Amplify with public access configuration
 Amplify.configure({
