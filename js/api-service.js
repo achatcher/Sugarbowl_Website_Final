@@ -2,20 +2,51 @@
  * API Service for SugarBowl Customer Site
  * Handles public read-only access to burger and menu data
  */
-import { Amplify } from 'aws-amplify'
-import { generateClient } from 'aws-amplify/api'
-import { getUrl } from 'aws-amplify/storage'
-import awsExports from './aws-exports.js'
 
-// Configure Amplify exactly like your admin app
-Amplify.configure(awsExports)
-
-const client = generateClient()
+// AWS Configuration (same as your admin app)
+const awsConfig = {
+    "aws_project_region": "us-east-2",
+    "aws_cognito_identity_pool_id": "us-east-2:099c5276-e823-4b19-868a-20f62c653782",
+    "aws_cognito_region": "us-east-2",
+    "aws_user_pools_id": "us-east-2_xMgT5StJT",
+    "aws_user_pools_web_client_id": "2lvk66oh9p517qt6fkd7tdcm64",
+    "oauth": {},
+    "aws_cognito_username_attributes": [],
+    "aws_cognito_social_providers": [],
+    "aws_cognito_signup_attributes": ["EMAIL"],
+    "aws_cognito_mfa_configuration": "OFF",
+    "aws_cognito_mfa_types": ["SMS"],
+    "aws_cognito_password_protection_settings": {
+        "passwordPolicyMinLength": 8,
+        "passwordPolicyCharacters": []
+    },
+    "aws_cognito_verification_mechanisms": ["EMAIL"],
+    "aws_user_files_s3_bucket": "sugarbowl-admin-imagesc1ae6-dev",
+    "aws_user_files_s3_bucket_region": "us-east-2",
+    "aws_appsync_graphqlEndpoint": "https://364vw33yefgirm4lhvwegdop4a.appsync-api.us-east-2.amazonaws.com/graphql",
+    "aws_appsync_region": "us-east-2",
+    "aws_appsync_authenticationType": "AWS_IAM"
+};
 
 class ApiService {
     constructor() {
         this.cache = new Map();
         this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
+        this.initialized = false;
+    }
+
+    async initialize() {
+        if (this.initialized) return;
+
+        // Wait for Amplify to be available
+        while (!window.aws_amplify_core) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+
+        // Configure Amplify
+        window.aws_amplify_core.Amplify.configure(awsConfig);
+        this.initialized = true;
+        console.log('AWS Amplify initialized successfully');
     }
 
     // GraphQL Queries
@@ -44,8 +75,6 @@ class ApiService {
             price
             category
             published
-            imageKey
-            imageUrl
           }
           nextToken
         }
@@ -56,6 +85,8 @@ class ApiService {
      * Get current burger special
      */
     async getCurrentBurger() {
+        await this.initialize();
+        
         const cacheKey = 'current-burger';
         
         // Check cache first
@@ -69,10 +100,10 @@ class ApiService {
         try {
             console.log('Fetching current burger special...');
             
-            const result = await client.graphql({
+            const result = await window.aws_amplify_api_graphql.GraphQLAPI.graphql({
                 query: this.GET_BURGER,
                 variables: { id: 'current' },
-                authMode: 'identityPool'
+                authMode: 'AWS_IAM'
             });
 
             let burger = result.data.getBurger;
@@ -81,14 +112,8 @@ class ApiService {
                 // Get image URL if we have an imageKey but no imageUrl
                 if (burger.imageKey && !burger.imageUrl) {
                     try {
-                        const urlResult = await getUrl({ 
-                            path: burger.imageKey,
-                            options: {
-                                accessLevel: 'public',
-                                expiresIn: 3600
-                            }
-                        });
-                        burger.imageUrl = urlResult.url.toString();
+                        // Build S3 URL directly for public access
+                        burger.imageUrl = `https://${awsConfig.aws_user_files_s3_bucket}.s3.${awsConfig.aws_user_files_s3_bucket_region}.amazonaws.com/public/${burger.imageKey}`;
                     } catch (urlError) {
                         console.warn('Could not resolve burger image URL:', urlError);
                         burger.imageUrl = null;
@@ -116,6 +141,8 @@ class ApiService {
      * Get published menu items by category
      */
     async getMenuItems(category = null) {
+        await this.initialize();
+        
         const cacheKey = `menu-items-${category || 'all'}`;
         
         // Check cache first
@@ -137,13 +164,13 @@ class ApiService {
                 filter.category = { eq: category };
             }
 
-            const result = await client.graphql({
+            const result = await window.aws_amplify_api_graphql.GraphQLAPI.graphql({
                 query: this.LIST_MENU_ITEMS,
                 variables: { 
                     filter: filter,
                     limit: 100
                 },
-                authMode: 'identityPool'
+                authMode: 'AWS_IAM'
             });
 
             const items = result.data.listMenuItems.items || [];
