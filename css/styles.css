@@ -1,0 +1,1468 @@
+/*--------------------------------------------------------------
+# Variables
+--------------------------------------------------------------*/
+:root {
+    /* Color Scheme */
+    --primary-color: #2b4da8;        /* Rich blue */
+    --primary-light: #4b6cc4;        /* Lighter blue for highlights */
+    --primary-dark: #1a3278;         /* Darker blue for shadows */
+    --accent-color: #8b0000;         /* Dark red (used sparingly) */
+    
+    /* Background Colors */
+    --dark-bg: #121212;              /* Main background */
+    --darker-bg: #0a0a0a;            /* Darker areas */
+    --card-bg: #1e1e1e;              /* Cards and panels */
+    --card-highlight: #262b3d;       /* Blue-tinted highlight for cards */
+    
+    /* Text Colors */
+    --light-text: #f0f0f0;           /* Primary text */
+    --blue-text: #a7c6ff;            /* Accent text */
+    --muted-text: #a0a0a0;           /* Secondary text */
+    
+    /* Layout & Effects */
+    --border-radius: 8px;
+    --transition: all 0.3s ease;
+    --grungy-highlight: rgba(255, 255, 255, 0.03);
+    --header-height: 60px;
+    --nav-height: 60px;
+}
+
+/*--------------------------------------------------------------
+# Base Styles
+--------------------------------------------------------------*/
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: var(--header-height);
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--dark-bg);
+    color: var(--light-text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 16px;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+    background-image: url('../img/grunge-texture.png'), 
+                      linear-gradient(to bottom, rgba(27, 32, 52, 0.3), rgba(0, 0, 0, 0));
+    background-color: var(--dark-bg); /* Fallback */
+    background-blend-mode: overlay;
+}
+
+/*--------------------------------------------------------------
+# Layout & Container
+--------------------------------------------------------------*/
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    max-width: 100vw;
+    overflow-x: hidden;
+    position: relative;
+    padding-top: var(--header-height);
+}
+
+main {
+    flex: 1;
+    padding: 15px;
+    padding-bottom: 100px; /* Space for fixed nav */
+    max-width: 600px; /* Limit content width on larger screens */
+    margin: 0 auto;
+    width: 100%;
+}
+
+.page {
+    display: none;
+    animation: fadeIn 0.4s;
+    padding-top: 10px;
+    padding-bottom: 70px; /* Space for bottom navigation */
+}
+
+.active-page {
+    display: block;
+}
+
+/*--------------------------------------------------------------
+# Header & Navigation
+--------------------------------------------------------------*/
+/* Top Header with Logo */
+.top-header {
+    background-color: var(--darker-bg);
+    height: var(--header-height);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    padding: 0 15px;
+    border-bottom: 1px solid rgba(139, 0, 0, 0.3); /* Subtle red border */
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo img {
+    height: 40px;
+    padding: 2px;
+    filter: drop-shadow(0 0 3px rgba(212, 175, 55, 0.5)); /* Gold glow */
+    animation: subtle-pulse 4s infinite alternate ease-in-out;
+}
+
+.logo h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: 'Bebas Neue', sans-serif;
+    color: var(--light-text);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* Bottom Navigation */
+.main-nav {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    background-color: var(--darker-bg);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    border-top: 1px solid rgba(139, 0, 0, 0.3);
+    height: var(--nav-height);
+}
+
+.main-nav a {
+    text-decoration: none;
+    color: var(--muted-text);
+    font-size: 1.4rem;
+    padding: 15px 0;
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    position: relative;
+}
+
+.main-nav a:hover, 
+.main-nav a.active {
+    color: var(--primary-light);
+    background-color: rgba(43, 77, 168, 0.1);
+}
+
+.main-nav a.active::after {
+    content: "";
+    display: block;
+    width: 30px;
+    height: 2px;
+    background-color: var(--primary-light);
+    position: absolute;
+    bottom: 0;
+    border-radius: 2px;
+}
+
+.main-nav a i {
+    margin-bottom: 3px;
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+}
+
+/* Notification indicator */
+.main-nav a.has-notification::after {
+    content: "";
+    position: absolute;
+    top: 6px;
+    right: calc(50% - 16px);
+    width: 6px;
+    height: 6px;
+    background-color: var(--accent-color);
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+}
+
+/*--------------------------------------------------------------
+# Typography & Headings
+--------------------------------------------------------------*/
+h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: var(--light-text);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 8px;
+    display: inline-block;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+h3 {
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+    color: var(--blue-text);
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+}
+
+.section-heading {
+    margin: 30px 0 15px;
+    position: relative;
+}
+
+/* Removed the blue L-shaped decoration */
+.section-heading::before {
+    display: none;
+}
+
+.section-heading h3 {
+    font-size: 1.5rem;
+    padding-bottom: 8px;
+    display: inline-block;
+    position: relative;
+}
+
+.section-heading h3::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 2px;
+    background-color: var(--accent-color);
+}
+
+/*--------------------------------------------------------------
+# Buttons & Interactive Elements
+--------------------------------------------------------------*/
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: var(--light-text);
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    transition: var(--transition);
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.9rem;
+    position: relative;
+    overflow: hidden;
+    will-change: transform;
+}
+
+.btn::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: 0.4s;
+}
+
+.btn:hover::after {
+    left: 100%;
+}
+
+.btn:hover, 
+.btn:focus {
+    background-color: var(--primary-light);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn:active {
+    animation: pulse 0.3s ease;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+/* Focus states for accessibility */
+:focus {
+    outline: 2px solid var(--primary-light);
+    outline-offset: 2px;
+}
+
+.btn:focus, 
+.tab-btn:focus, 
+.main-nav a:focus {
+    outline-color: var(--primary-light);
+}
+
+.btn:focus:not(:focus-visible), 
+.tab-btn:focus:not(:focus-visible), 
+.main-nav a:focus:not(:focus-visible) {
+    outline: none;
+}
+
+.btn:focus-visible, 
+.tab-btn:focus-visible, 
+.main-nav a:focus-visible {
+    outline: 2px solid var(--primary-light);
+    outline-offset: 2px;
+}
+
+/*--------------------------------------------------------------
+# Home Page Elements
+--------------------------------------------------------------*/
+.hero {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)),
+        url('../img/background2.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 220px;
+    border-radius: var(--border-radius);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('../img/texture-overlay.png');
+    opacity: 0.2;
+    z-index: 1;
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../img/scuff-overlay.png');
+    opacity: 0.1;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.hero h2 {
+    font-size: 2.2rem;
+    border: none;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    position: relative;
+    z-index: 2;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 2px;
+}
+
+.hero p {
+    margin-bottom: 18px;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+    position: relative;
+    z-index: 2;
+    font-style: italic;
+}
+
+.hero .btn {
+    position: relative;
+    z-index: 2;
+}
+
+/* Quick Info Cards */
+.quick-info {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+}
+
+.quick-info::after {
+    content: "";
+    position: absolute;
+    bottom: -15px;
+    left: 0;
+    right: 0;
+    height: 15px;
+    background-image: url('../img/torn-paper.png');
+    background-size: 100% 100%;
+    opacity: 0.1;
+    z-index: 1;
+}
+
+.info-card {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 18px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(75, 108, 196, 0.2);
+}
+
+.info-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-dark), var(--primary-light));
+}
+
+.info-card h3 {
+    position: relative;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.info-card h3::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background-color: var(--accent-color);
+}
+
+/* Card grunge textures */
+.info-card::before, 
+.burger-spotlight::before, 
+.menu-item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../img/subtle-grunge.png');
+    opacity: 0.04;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Burger preview on homepage */
+.burger-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.burger-preview img {
+    width: 100%;
+    max-width: 280px;
+    border-radius: var(--border-radius);
+    margin-bottom: 15px;
+    object-fit: cover;
+    height: 160px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.burger-preview:hover img {
+    transform: scale(1.02);
+}
+
+/* Today's event card */
+.today-event {
+    padding: 20px;
+    border-left: 3px solid var(--primary-color);
+    background-color: rgba(43, 77, 168, 0.1);
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.today-event h2 {
+    font-size: 1.3rem;
+    border: none;
+    margin-bottom: 12px;
+    padding-bottom: 0;
+    color: var(--light-text);
+    text-shadow: none;
+}
+
+.today-event .event-time {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin: 12px 0 15px;
+    display: block;
+}
+
+.today-event p {
+    margin-bottom: 15px;
+    color: var(--muted-text);
+    line-height: 1.5;
+}
+
+.today-event .btn, 
+.today-event .view-all-btn {
+    margin-top: 15px;
+    align-self: flex-start;
+}
+
+/*--------------------------------------------------------------
+# Burger & Menu Page
+--------------------------------------------------------------*/
+/* Burger Spotlight */
+.burger-spotlight {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 0; /* Remove padding from outer container */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    margin-bottom: 30px;
+    overflow: hidden;
+    border: 1px solid var(--card-bg);
+}
+
+/* Current burger section */
+.current-burger {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+/* Burger image */
+.burger-spotlight .burger-image,
+.current-burger img {
+    width: 100%;
+    max-width: 300px;
+    border-radius: var(--border-radius);
+    object-fit: cover;
+    height: 180px;
+    margin: 0 auto 20px auto;
+    display: block;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Burger titles and headings */
+.burger-spotlight h3 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.burger-spotlight h4,
+.current-burger h4,
+.burger-info h4 {
+    font-size: 1.4rem;
+    color: var(--light-text);
+    margin-bottom: 8px;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+    text-align: center;
+}
+
+/* Burger price */
+.burger-spotlight .burger-price,
+.burger-info .price {
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 1.3rem;
+    text-align: center;
+    margin: 10px 0;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Burger availability */
+.burger-spotlight .burger-availability {
+    color: var(--blue-text); /* Blue text */
+    background-color: rgba(43, 77, 168, 0.1); /* Transparent blue background */
+    padding: 8px 15px;
+    border-radius: var(--border-radius);
+    display: inline-block;
+    margin: 10px 0;
+    font-weight: 500;
+    text-align: center;
+}
+
+/* Burger description */
+.burger-spotlight .burger-description,
+.burger-info p {
+    color: var(--muted-text);
+    margin: 15px 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    text-align: center;
+}
+
+/* Ingredients section */
+.ingredients {
+    background-color: rgba(255, 255, 255, 0.05); /* Lighter background color */
+    padding: 15px 20px;
+    border-radius: var(--border-radius);
+    margin: 20px 0;
+    text-align: left;
+    width: 100%;
+}
+
+.burger-spotlight h5,
+.ingredients h5 {
+    margin: 0 0 10px 0;
+    font-size: 1.2rem;
+    color: var(--light-text); /* White text for "Ingredients:" */
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+    text-align: left;
+}
+
+.burger-ingredients,
+.ingredients ul {
+    list-style-type: disc;
+    list-style-position: inside;
+    padding-left: 5px;
+    text-align: left;
+}
+
+.burger-ingredients li,
+.ingredients li {
+    margin-bottom: 8px;
+    color: var(--muted-text);
+    text-align: left;
+    padding-left: 5px;
+}
+
+.ingredients li::marker,
+.burger-ingredients li::marker {
+    color: var(--accent-color); /* Red bullet points */
+}
+
+/* Old availability style (keeping for reference) */
+.availability {
+    margin-top: 15px;
+    padding: 8px 12px;
+    background-color: rgba(139, 0, 0, 0.15);
+    border-radius: var(--border-radius);
+    display: inline-block;
+    font-weight: 500;
+    border: 1px dashed rgba(139, 0, 0, 0.3);
+}
+
+/* Burger info section */
+.burger-info {
+    text-align: center;
+    margin-bottom: 15px;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+/* Distressed border effect */
+.distressed-border {
+    position: relative;
+}
+
+.distressed-border::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 1px solid var(--primary-light);
+    border-radius: var(--border-radius);
+    filter: url(#distressFilter);
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+/* Menu tabs */
+.menu-tabs {
+    display: flex;
+    overflow-x: auto;
+    gap: 8px;
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+}
+
+.menu-tabs::-webkit-scrollbar {
+    height: 3px;
+}
+
+.menu-tabs::-webkit-scrollbar-thumb {
+    background-color: var(--accent-color);
+}
+
+.tab-btn {
+    background-color: var(--card-bg);
+    color: var(--light-text);
+    border: 1px solid var(--primary-color);
+    border-radius: var(--border-radius);
+    padding: 10px 18px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: var(--transition);
+    flex-shrink: 0;
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.tab-btn::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary-light);
+    transition: width 0.3s ease;
+}
+
+.tab-btn:hover::before {
+    width: 100%;
+}
+
+.tab-btn.active {
+    background-color: var(--primary-color);
+    color: var(--light-text);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.tab-btn.active::before {
+    width: 100%;
+    background-color: var(--accent-color);
+}
+
+/* Menu items */
+.menu-item {
+    background-color: var(--card-bg);
+    padding: 16px;
+    border-radius: var(--border-radius);
+    margin-bottom: 15px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+    border-left: 3px solid transparent;
+    transition: var(--transition);
+    position: relative;
+    will-change: transform;
+}
+
+.menu-item:hover {
+    border-left-color: var(--primary-color);
+    transform: translateX(2px);
+}
+
+.menu-item-info {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+}
+
+.menu-item-info h4 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    color: var(--light-text);
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+}
+
+.menu-item-info h4::after {
+    content: "";
+    flex-grow: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.1), transparent);
+    margin-left: 10px;
+}
+
+.menu-item-info p {
+    font-size: 0.9rem;
+    color: var(--muted-text);
+    margin-bottom: 12px;
+    line-height: 1.5;
+    text-align: left;
+}
+
+.menu-item-price {
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    display: inline-block;
+    padding: 3px 8px;
+    background-color: rgba(43, 77, 168, 0.1);
+    border-radius: var(--border-radius);
+}
+
+/*--------------------------------------------------------------
+# Hours & Info Page
+--------------------------------------------------------------*/
+.info-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.hours-list {
+    list-style: none;
+    padding: 0;
+}
+
+.hours-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.hours-list li:last-child {
+    border-bottom: none;
+}
+
+.happy-hour {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--blue-text); 
+    text-align: center;
+    padding: 10px;
+    background-color: rgba(43, 77, 168, 0.1); 
+    border-radius: var(--border-radius);
+    margin-bottom: 15px;
+}
+
+.happy-hour-deals {
+    list-style: none;
+    padding: 0 0 0 5px;
+}
+
+.happy-hour-deals li {
+    padding: 6px 0;
+    position: relative;
+    padding-left: 20px;
+}
+
+.happy-hour-deals li::before {
+    content: "•";
+    color: var(--accent-color);
+    position: absolute;
+    left: 0;
+    font-size: 1.2rem;
+}
+
+.location-info {
+    margin-bottom: 15px;
+}
+
+.location-info p {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    color: var(--light-text);
+}
+
+.location-info p i {
+    color: var(--primary-light);
+    width: 20px;
+    text-align: center;
+}
+
+.map-container {
+    width: 100%;
+    height: 180px;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    margin-top: 15px;
+}
+
+.location-map {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/*--------------------------------------------------------------
+# Events Calendar
+--------------------------------------------------------------*/
+.month-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.month-navigation button {
+    background: var(--primary-color);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--light-text);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.month-navigation button:hover {
+    background: var(--accent-color);
+}
+
+.month-navigation h3 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.calendar {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+.calendar-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 8px;
+}
+
+.calendar-header span {
+    color: var(--muted-text);
+    font-size: 0.8rem;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    color: var(--light-text);
+    font-size: 0.9rem;
+    border: 1px solid transparent;
+}
+
+.calendar-day:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.calendar-day.has-event {
+    border: 1px solid var(--primary-color);
+}
+
+.calendar-day.has-event::after {
+    content: "";
+    position: absolute;
+    bottom: 3px;
+    width: 4px;
+    height: 4px;
+    background-color: var(--accent-color);
+    border-radius: 50%;
+}
+
+.calendar-day.selected {
+    background-color: var(--primary-color);
+}
+
+.calendar-day.inactive {
+    color: var(--muted-text);
+    opacity: 0.5;
+}
+
+.calendar-day.today {
+    background-color: rgba(43, 77, 168, 0.2);
+}
+
+/*--------------------------------------------------------------
+# Modal & Dialog Styles
+--------------------------------------------------------------*/
+/* Day modal styling */
+.day-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+}
+
+.day-modal-content {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    width: 100%;
+    max-width: 350px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(139, 0, 0, 0.2);
+}
+
+.close-day-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: var(--muted-text);
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    transition: color 0.2s ease;
+}
+
+.close-day-modal:hover {
+    color: var(--accent-color);
+}
+
+.day-title {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--light-text);
+}
+
+.event-list {
+    margin-top: 15px;
+}
+
+.event-item {
+    margin-bottom: 15px;
+    border-left: 3px solid var(--primary-color);
+    padding: 12px;
+    background-color: rgba(30, 58, 138, 0.1);
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.event-item:hover {
+    background-color: rgba(30, 58, 138, 0.2);
+    transform: translateX(3px);
+}
+
+.event-item h4 {
+    font-size: 1.05rem;
+    margin-bottom: 6px;
+    color: var(--light-text);
+}
+
+.event-time {
+    font-size: 0.85rem;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin: 10px 0;
+    font-weight: 600;
+}
+
+.event-desc {
+    font-size: 0.85rem;
+    color: var(--muted-text);
+    line-height: 1.5;
+}
+
+.no-events {
+    text-align: center;
+    padding: 25px 15px;
+    color: var(--muted-text);
+    font-style: italic;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius);
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+/* General modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+}
+
+.modal-content {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    width: 100%;
+    max-width: 350px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(139, 0, 0, 0.2);
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: var(--muted-text);
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    transition: color 0.2s ease;
+}
+
+.close-modal:hover {
+    color: var(--accent-color);
+}
+
+/*--------------------------------------------------------------
+# Footer
+--------------------------------------------------------------*/
+footer {
+    background-color: var(--darker-bg);
+    padding: 25px 15px;
+    text-align: center;
+    margin-bottom: 65px; /* Space for fixed nav */
+    position: relative;
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+footer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(to right, transparent, var(--primary-color), transparent);
+    opacity: 0.3;
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.contact-info p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--muted-text);
+}
+
+.contact-info p i {
+    color: var(--primary-light);
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-bottom: 15px;
+}
+
+.social-links a {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    transition: var(--transition);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: rgba(30, 58, 138, 0.1);
+}
+
+.social-links a:hover {
+    color: var(--accent-color);
+    transform: translateY(-3px);
+    background-color: rgba(30, 58, 138, 0.2);
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+.copyright {
+    color: var(--muted-text);
+    font-size: 0.85rem;
+    margin-top: 10px;
+    opacity: 0.8;
+}
+
+/*--------------------------------------------------------------
+# Loading Spinner
+--------------------------------------------------------------*/
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    color: var(--muted-text);
+    font-style: italic;
+    position: relative;
+    padding-left: 24px;
+}
+
+.loading-spinner::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--primary-color);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+/*--------------------------------------------------------------
+# Animation Keyframes
+--------------------------------------------------------------*/
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes rotation {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes subtle-pulse {
+    0% { filter: drop-shadow(0 0 3px rgba(212, 175, 55, 0.3)); }
+    100% { filter: drop-shadow(0 0 4px rgba(212, 175, 55, 0.8)); }
+}
+
+/*--------------------------------------------------------------
+# iOS and Device Fixes
+--------------------------------------------------------------*/
+/* Fix for iOS devices to prevent 100vh issues */
+html, body {
+    height: 100%;
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+@supports (-webkit-touch-callout: none) {
+    .app-container {
+        min-height: -webkit-fill-available;
+    }
+    
+    .modal, .day-modal {
+        height: -webkit-fill-available;
+    }
+}
+
+/* When virtual keyboard is open on mobile */
+@media screen and (max-height: 450px) {
+    .main-nav {
+        position: absolute;
+    }
+}
+
+/* Form element styling */
+input, textarea, select, button {
+    font-family: 'Poppins', sans-serif;
+}
+
+/*--------------------------------------------------------------
+# Responsive Design
+--------------------------------------------------------------*/
+/* Medium screens and up */
+@media (min-width: 768px) {
+    main {
+        padding: 20px;
+    }
+    
+    .hero {
+        height: 250px;
+    }
+    
+    .hero h2 {
+        font-size: 2.5rem;
+    }
+    
+    .menu-item:hover {
+        transform: translateX(5px);
+    }
+    
+    .modal-content, 
+    .day-modal-content {
+        max-width: 450px;
+    }
+}
+
+/*--------------------------------------------------------------
+# Accessibility
+--------------------------------------------------------------*/
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    :root {
+        --primary-color: #2045ad;
+        --accent-color: #b30000;
+        --light-text: #ffffff;
+        --muted-text: #cccccc;
+    }
+    
+    .ingredients li,
+    .menu-item-info p {
+        color: #b8b8b8;
+    }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .btn:hover, 
+    .btn:focus, 
+    .menu-item:hover, 
+    .event-item:hover, 
+    .social-links a:hover, 
+    .burger-preview:hover img {
+        transform: none;
+        transition: none;
+    }
+    
+    .btn::after {
+        display: none;
+    }
+    
+    @keyframes rotation {
+        0% { opacity: 0.7; }
+        100% { opacity: 1; }
+    }
+    
+    html {
+        scroll-behavior: auto;
+    }
+    
+    .logo img {
+        animation: none;
+    }
+}
+
+/*--------------------------------------------------------------
+# Print Styles
+--------------------------------------------------------------*/
+@media print {
+    body {
+        background-image: none;
+        background-color: white;
+        color: black;
+    }
+    
+    .app-container {
+        padding: 0;
+    }
+    
+    .top-header, 
+    .main-nav, 
+    footer {
+        display: none;
+    }
+    
+    main {
+        padding: 0;
+    }
+    
+    .info-card, 
+    .menu-item {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        border: 1px solid #ccc;
+        color: black;
+        background: white;
+    }
+    
+    a {
+        text-decoration: none;
+        color: black;
+    }
+    
+    .btn {
+        display: none;
+    }
+    
+    h2, 
+    h3 {
+        color: black;
+    }
+}
+
+/* End of styles.css */
