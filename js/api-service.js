@@ -3,9 +3,6 @@
  * Handles public read-only access to burger and menu data
  */
 
-// We'll load AWS Amplify via script tag instead of ES6 imports
-// Add this script tag to your HTML head section first
-
 class ApiService {
     constructor() {
         this.cache = new Map();
@@ -17,8 +14,22 @@ class ApiService {
         if (this.initialized) return;
 
         // Wait for AWS Amplify to be available globally
-        if (typeof window.aws_amplify === 'undefined') {
-            throw new Error('AWS Amplify not loaded');
+        let attempts = 0;
+        const maxAttempts = 50; // 5 seconds max wait
+        
+        while (attempts < maxAttempts) {
+            if (typeof window.aws_amplify !== 'undefined' || typeof window.AWS_AMPLIFY !== 'undefined') {
+                break;
+            }
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+        }
+
+        // Try different global variable names
+        const Amplify = window.aws_amplify || window.AWS_AMPLIFY || window.awsAmplify;
+        
+        if (!Amplify) {
+            throw new Error('AWS Amplify not loaded after 5 seconds');
         }
 
         const awsConfig = {
@@ -32,9 +43,76 @@ class ApiService {
             "aws_user_files_s3_bucket_region": "us-east-2"
         };
 
-        window.aws_amplify.Amplify.configure(awsConfig);
-        this.client = window.aws_amplify.API.generateClient();
+        Amplify.Amplify.configure(awsConfig);
+        this.client = Amplify.API.generateClient();
+        this.amplify = Amplify;
         this.initialized = true;
+        
+        console.log('AWS Amplify initialized successfully');
+    }
+
+    // ... rest of your methods stay the same, but update the Storage calls:
+
+    /**
+     * Get current burger special
+     */
+    async getCurrentBurger() {
+        await this.initialize();
+        
+        const cacheKey = 'current-burger';
+        
+        // Check cache first
+        if (this.cache.has(cacheKey)) {
+            const cached = this.cache.get(cacheKey);
+            if (Date.now() - cached.timestamp < this.cacheTimeout) {
+                return cached.data;
+            }
+        }
+
+        try {
+            console.log('Fetching current burger special...');
+            
+            const result = await this.client.graphql({
+                query: this.GET_BURGER,
+                variables: { id: 'current' },
+                authMode: 'identityPool'
+            });
+
+            let burger = result.data.getBurger;
+            
+            if (burger) {
+                // Get image URL if we have an imageKey but no imageUrl
+                if (burger.imageKey && !burger.imageUrl) {
+                    try {
+                        const urlResult = await this.amplify.Storage.getUrl({ 
+                            path: burger.imageKey,
+                            options: {
+                                accessLevel: 'public',
+                                expiresIn: 3600
+                            }
+                        });
+                        burger.imageUrl = urlResult.url.toString();
+                    } catch (urlError) {
+                        console.warn('Could not resolve burger image URL:', urlError);
+                        burger.imageUrl = null;
+                    }
+                }
+
+                // Cache the result
+                this.cache.set(cacheKey, {
+                    data: burger,
+                    timestamp: Date.now()
+                });
+
+                console.log('Current burger fetched:', burger);
+                return burger;
+            }
+            
+            return null;
+        } catch (error) {
+            console.error('Error fetching current burger:', error);
+            return null;
+        }
     }
 
     // GraphQL Queries
@@ -70,68 +148,6 @@ class ApiService {
         }
       }
     `;
-
-    /**
-     * Get current burger special
-     */
-    async getCurrentBurger() {
-        await this.initialize();
-        
-        const cacheKey = 'current-burger';
-        
-        // Check cache first
-        if (this.cache.has(cacheKey)) {
-            const cached = this.cache.get(cacheKey);
-            if (Date.now() - cached.timestamp < this.cacheTimeout) {
-                return cached.data;
-            }
-        }
-
-        try {
-            console.log('Fetching current burger special...');
-            
-            const result = await this.client.graphql({
-                query: this.GET_BURGER,
-                variables: { id: 'current' },
-                authMode: 'identityPool'
-            });
-
-            let burger = result.data.getBurger;
-            
-            if (burger) {
-                // Get image URL if we have an imageKey but no imageUrl
-                if (burger.imageKey && !burger.imageUrl) {
-                    try {
-                        const urlResult = await window.aws_amplify.Storage.getUrl({ 
-                            path: burger.imageKey,
-                            options: {
-                                accessLevel: 'public',
-                                expiresIn: 3600
-                            }
-                        });
-                        burger.imageUrl = urlResult.url.toString();
-                    } catch (urlError) {
-                        console.warn('Could not resolve burger image URL:', urlError);
-                        burger.imageUrl = null;
-                    }
-                }
-
-                // Cache the result
-                this.cache.set(cacheKey, {
-                    data: burger,
-                    timestamp: Date.now()
-                });
-
-                console.log('Current burger fetched:', burger);
-                return burger;
-            }
-            
-            return null;
-        } catch (error) {
-            console.error('Error fetching current burger:', error);
-            return null;
-        }
-    }
 
     /**
      * Get published menu items by category
