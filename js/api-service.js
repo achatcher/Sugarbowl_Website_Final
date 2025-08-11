@@ -2,65 +2,81 @@
  * API Service for SugarBowl Customer Site
  * Handles public read-only access to burger and menu data
  */
-import amplify from 'https://cdn.skypack.dev/aws-amplify@6.0.0';
-import awsConfig from './aws-config.js';
 
-const { Amplify } = amplify;
-const { generateClient } = amplify.API;
-const { getUrl } = amplify.Storage;
-
-// Initialize Amplify with public access configuration
-Amplify.configure({
-    ...awsConfig,
-    aws_appsync_authenticationType: "AWS_IAM"
-});
-
-const client = generateClient();
-
-// GraphQL Queries - These should match your backend queries
-const GET_BURGER = `
-  query GetBurger($id: ID!) {
-    getBurger(id: $id) {
-      id
-      name
-      description
-      price
-      startDate
-      endDate
-      imageKey
-      imageUrl
-    }
-  }
-`;
-
-const LIST_MENU_ITEMS = `
-  query ListMenuItems($filter: ModelMenuItemFilterInput, $limit: Int, $nextToken: String) {
-    listMenuItems(filter: $filter, limit: $limit, nextToken: $nextToken) {
-      items {
-        id
-        name
-        description
-        price
-        category
-        published
-        imageKey
-        imageUrl
-      }
-      nextToken
-    }
-  }
-`;
+// We'll load AWS Amplify via script tag instead of ES6 imports
+// Add this script tag to your HTML head section first
 
 class ApiService {
     constructor() {
         this.cache = new Map();
         this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
+        this.initialized = false;
     }
+
+    async initialize() {
+        if (this.initialized) return;
+
+        // Wait for AWS Amplify to be available globally
+        if (typeof window.aws_amplify === 'undefined') {
+            throw new Error('AWS Amplify not loaded');
+        }
+
+        const awsConfig = {
+            "aws_project_region": "us-east-2",
+            "aws_cognito_identity_pool_id": "us-east-2:099c5276-e823-4b19-868a-20f62c653782",
+            "aws_cognito_region": "us-east-2",
+            "aws_appsync_graphqlEndpoint": "https://364vw33yefgirm4lhvwegdop4a.appsync-api.us-east-2.amazonaws.com/graphql",
+            "aws_appsync_region": "us-east-2",
+            "aws_appsync_authenticationType": "AWS_IAM",
+            "aws_user_files_s3_bucket": "sugarbowl-admin-imagesc1ae6-dev",
+            "aws_user_files_s3_bucket_region": "us-east-2"
+        };
+
+        window.aws_amplify.Amplify.configure(awsConfig);
+        this.client = window.aws_amplify.API.generateClient();
+        this.initialized = true;
+    }
+
+    // GraphQL Queries
+    GET_BURGER = `
+      query GetBurger($id: ID!) {
+        getBurger(id: $id) {
+          id
+          name
+          description
+          price
+          startDate
+          endDate
+          imageKey
+          imageUrl
+        }
+      }
+    `;
+
+    LIST_MENU_ITEMS = `
+      query ListMenuItems($filter: ModelMenuItemFilterInput, $limit: Int, $nextToken: String) {
+        listMenuItems(filter: $filter, limit: $limit, nextToken: $nextToken) {
+          items {
+            id
+            name
+            description
+            price
+            category
+            published
+            imageKey
+            imageUrl
+          }
+          nextToken
+        }
+      }
+    `;
 
     /**
      * Get current burger special
      */
     async getCurrentBurger() {
+        await this.initialize();
+        
         const cacheKey = 'current-burger';
         
         // Check cache first
@@ -74,8 +90,8 @@ class ApiService {
         try {
             console.log('Fetching current burger special...');
             
-            const result = await client.graphql({
-                query: GET_BURGER,
+            const result = await this.client.graphql({
+                query: this.GET_BURGER,
                 variables: { id: 'current' },
                 authMode: 'identityPool'
             });
@@ -86,18 +102,17 @@ class ApiService {
                 // Get image URL if we have an imageKey but no imageUrl
                 if (burger.imageKey && !burger.imageUrl) {
                     try {
-                        const urlResult = await getUrl({ 
+                        const urlResult = await window.aws_amplify.Storage.getUrl({ 
                             path: burger.imageKey,
                             options: {
-                                accessLevel: 'public', // Public access
+                                accessLevel: 'public',
                                 expiresIn: 3600
                             }
                         });
                         burger.imageUrl = urlResult.url.toString();
                     } catch (urlError) {
                         console.warn('Could not resolve burger image URL:', urlError);
-                        // Use placeholder image
-                        burger.imageUrl = 'img/burgers/burger.jpg';
+                        burger.imageUrl = null;
                     }
                 }
 
@@ -114,16 +129,7 @@ class ApiService {
             return null;
         } catch (error) {
             console.error('Error fetching current burger:', error);
-            
-            // Return fallback data
-            return {
-                name: 'Classic SugarBowl Burger',
-                description: 'Our signature beef patty with lettuce, tomato, onion, pickles, and special sauce on a brioche bun.',
-                price: 15.99,
-                imageUrl: 'img/burgers/burger.jpg',
-                startDate: new Date().toISOString().split('T')[0],
-                endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-            };
+            return null;
         }
     }
 
@@ -131,6 +137,8 @@ class ApiService {
      * Get published menu items by category
      */
     async getMenuItems(category = null) {
+        await this.initialize();
+        
         const cacheKey = `menu-items-${category || 'all'}`;
         
         // Check cache first
@@ -152,8 +160,8 @@ class ApiService {
                 filter.category = { eq: category };
             }
 
-            const result = await client.graphql({
-                query: LIST_MENU_ITEMS,
+            const result = await this.client.graphql({
+                query: this.LIST_MENU_ITEMS,
                 variables: { 
                     filter: filter,
                     limit: 100
@@ -161,27 +169,7 @@ class ApiService {
                 authMode: 'identityPool'
             });
 
-            let items = result.data.listMenuItems.items || [];
-
-            // Process images for each item
-            items = await Promise.all(items.map(async (item) => {
-                if (item.imageKey && !item.imageUrl) {
-                    try {
-                        const urlResult = await getUrl({ 
-                            path: item.imageKey,
-                            options: {
-                                accessLevel: 'guest',
-                                expiresIn: 3600
-                            }
-                        });
-                        item.imageUrl = urlResult.url.toString();
-                    } catch (urlError) {
-                        console.warn(`Could not resolve image URL for item ${item.id}:`, urlError);
-                        item.imageUrl = null; // Will fall back to CSS placeholder
-                    }
-                }
-                return item;
-            }));
+            const items = result.data.listMenuItems.items || [];
 
             // Cache the result
             this.cache.set(cacheKey, {
@@ -232,5 +220,8 @@ class ApiService {
 
 // Create singleton instance
 const apiService = new ApiService();
+
+// Make it available globally
+window.SugarBowlAPI = apiService;
 
 export default apiService;
