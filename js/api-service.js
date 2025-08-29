@@ -8,33 +8,59 @@ class ApiService {
         this.cache = new Map();
         this.cacheTimeout = 5 * 60 * 1000; 
         this.graphqlEndpoint = 'https://364vw33yefgirm4lhvwegdop4a.appsync-api.us-east-2.amazonaws.com/graphql';
-        this.apiKey = 'da2-qllb6vubvjgx3c6ipze66327ii'; 
+        this.apiKey = 'da2-5rhu27fnxvamrkkd4cewihkjki'; 
     }
 
     async makeGraphQLRequest(query, variables = {}) {
-        try {
-            const response = await fetch(this.graphqlEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-key': this.apiKey
-                },
-                body: JSON.stringify({
-                    query: query,
-                    variables: variables
-                })
-            });
+    console.log('🔍 Making GraphQL Request...');
+    console.log('📝 Query:', query);
+    console.log('📋 Variables:', variables);
+    console.log('🔑 API Key:', this.apiKey);
+   
+    try {
+        const requestBody = JSON.stringify({
+            query: query,
+            variables: variables
+        });
+       
+        console.log('📦 Request Body:', requestBody);
+       
+        const response = await fetch(this.graphqlEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': this.apiKey
+            },
+            body: requestBody
+        });
 
-            const data = await response.json();
-            if (data.errors) {
-                throw new Error(`GraphQL error: ${JSON.stringify(data.errors)}`);
-            }
-            return data;
-        } catch (error) {
-            console.error('GraphQL request failed:', error);
-            throw error;
+        console.log('📊 Response Status:', response.status);
+        console.log('📊 Response OK:', response.ok);
+
+        const responseText = await response.text();
+        console.log('📄 Raw Response:', responseText);
+
+        let data;
+        try {
+            data = JSON.parse(responseText);
+        } catch (parseError) {
+            console.error('❌ JSON Parse Error:', parseError);
+            throw new Error(`Invalid JSON response: ${responseText}`);
         }
+
+        console.log('📄 Parsed Response:', data);
+
+        if (data.errors) {
+            console.error('❌ GraphQL Errors:', data.errors);
+            throw new Error(`GraphQL error: ${JSON.stringify(data.errors)}`);
+        }
+       
+        return data;
+    } catch (error) {
+        console.error('💥 Request Failed:', error);
+        throw error;
     }
+}
 
     async getCurrentBurger() {
         const cacheKey = 'current-burger';
@@ -128,9 +154,7 @@ class ApiService {
             appetizers: allItems.filter(item => item.category === 'appetizers'),
             burgers: allItems.filter(item => item.category === 'burgers'),
             sandwiches: allItems.filter(item => item.category === 'sandwiches'),
-            wraps: allItems.filter(item => item.category === 'wraps'),
-            mains: allItems.filter(item => item.category === 'mains'),
-            drinks: allItems.filter(item => item.category === 'drinks')
+            wraps: allItems.filter(item => item.category === 'wraps')
         };
     }
 

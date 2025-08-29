@@ -33,7 +33,7 @@
     <meta name="apple-mobile-web-app-title" content="SugarBowl">
     
     <!-- Security -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com 'unsafe-inline'; font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' https://cdn.skypack.dev; connect-src 'self' https://364vw33yefgirm4lhvwegdop4a.appsync-api.us-east-2.amazonaws.com; frame-src https://www.google.com https://www.google.com/maps/embed;">
+   
 </head>
 <body>
     <div class="app-container">
@@ -63,7 +63,7 @@
                     <div class="info-card">
                         <h3>Burger of the Week</h3>
                         <div class="burger-preview">
-                            <img src="img/burgers/burger.jpg" alt="Special Burger">
+                            <img id="home-burger-image" src="img/burgers/burger.jpg" alt="Burger of the Week">
                             <div class="burger-info" id="current-burger">
                                 <div class="loading-spinner">Loading this week's special...</div>
                             </div>
@@ -90,8 +90,8 @@
                 <div class="menu-tabs">
                     <button class="tab-btn active" data-category="appetizers">Appetizers</button>
                     <button class="tab-btn" data-category="burgers">Burgers</button>
-                    <button class="tab-btn" data-category="mains">Mains</button>
-                    <button class="tab-btn" data-category="drinks">Drinks</button>
+                    <button class="tab-btn" data-category="sandwiches">Sandwiches</button>
+                    <button class="tab-btn" data-category="wraps">Wraps</button>
                 </div>
                 <div class="menu-items" id="menu-items">
                     <div class="loading-spinner">Loading menu items...</div>
@@ -157,7 +157,7 @@
                     
                     <div class="info-card">
                         <h3>About Us</h3>
-                        <p>Established in 1997, SugarBowl has been serving up great food, cold drinks, and unforgettable nights for over 25 years. Our relaxed atmosphere makes us the perfect spot for lunch, dinner, or just hanging out with friends.</p>
+                        <p>Kalamazoo’s Oldest Neighborhood Dive Bar. The music is loud. The drinks are strong. The food is messy and amazing. The SugarBowl has been around since the ’40s, and we’re proud of it. Punk, metal, blues, country — if it rattles the walls, it belongs here. We’re for the weird, the loud, the misfits, the metalheads, the punks, the people who just want a good time. Basically, if you’re not a jerk, you fit in. Even if you think you don’t, you probably do. Live shows, DJs, karaoke that actually rocks — sometimes all at once. That’s the point, right?</p>
                     </div>
                 </div>
             </section>
@@ -241,6 +241,7 @@
     <script src="js/main.js"></script>
     <script src="js/calendar.js"></script>
     <script type="module" src="js/menu.js"></script>
+    <script type="module" src="js/burger-special.js"></script>
     
     <!-- Service Worker Registration -->
     <script>
