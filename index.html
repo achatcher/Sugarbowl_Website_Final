@@ -33,22 +33,29 @@
     <meta name="apple-mobile-web-app-title" content="SugarBowl">
     
     <!-- Security -->
-   
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com 'unsafe-inline'; font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' https://cdn.skypack.dev; connect-src 'self' https://364vw33yefgirm4lhvwegdop4a.appsync-api.us-east-2.amazonaws.com; frame-src https://www.google.com https://www.google.com/maps/embed;">
 </head>
 <body>
     <div class="app-container">
-        <header class="top-header">
+       <header class="top-header">
             <div class="logo">
                 <img src="img/logo.svg" alt="SugarBowl Logo">
-                 <!-- <h1>SugarBowl</h1> -->
+                <!-- <h1>SugarBowl</h1> -->
             </div>
+            
+            <nav class="main-nav">
+                <a href="#home" class="active"><i class="fas fa-home"></i></a>
+                <a href="#burger-special"><i class="fas fa-hamburger"></i></a>
+                <a href="#events"><i class="fas fa-calendar"></i></a>
+                <a href="#info"><i class="fas fa-info-circle"></i></a>
+            </nav>
         </header>
         
         <main>
             <section id="home" class="page active-page">
                 <div class="hero">
                     <h2>WELCOME TO THE BOWL</h2>
-                    <p>Kalamazoo’s Oldest Neighborhood Dive Bar</p>
+                    <p>Kalamazoo's Oldest Neighborhood Dive Bar</p>
                     <a href="#burger-special" class="btn">View Menu</a>
                 </div>
                 
@@ -70,6 +77,32 @@
                             <a href="#burger-special" class="btn btn-sm">See Details</a>
                         </div>
                     </div>
+                    
+                    <!-- Instagram Feed - Official Instagram Embed -->
+                    <div class="instagram-feed">
+                        <h3>
+                            <i class="fab fa-instagram"></i>
+                            Follow Our Journey @thesugarbowlkzoo
+                        </h3>
+                        
+                        <!-- Replace this iframe with your actual Instagram embed code -->
+                        <div class="instagram-embed-container">
+                            <!-- PASTE YOUR INSTAGRAM EMBED CODE HERE -->
+                            <!-- It will look something like this: -->
+                            <blockquote class="instagram-media" 
+                                        data-instgrm-permalink="https://www.instagram.com/thesugarbowlkzoo/" 
+                                        data-instgrm-version="14">
+                            </blockquote>
+                            <script async src="//www.instagram.com/embed.js"></script>
+                        </div>
+                        
+                        <div class="instagram-cta">
+                            <a href="https://www.instagram.com/thesugarbowlkzoo/" target="_blank" class="instagram-follow-btn">
+                                <i class="fab fa-instagram"></i>
+                                Follow Us on Instagram
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </section>
             
@@ -83,6 +116,59 @@
                     </div>
                 </div>
                 
+                <div class="food-carousel-section">
+                    <h3>SugarBowl Eats</h3>
+                    <div class="food-carousel">
+                        <div class="carousel-container" id="carousel-container">
+                            <div class="carousel-slide">
+                                <img src="img/unnamed.png" alt="SugarBowl Signature Burger">
+                                <div class="carousel-content">
+                                    <h4>SugarBowl Signature Burger</h4>
+                                    <p>Our famous house burger with all the fixings that put us on the map.</p>
+                                    <div class="carousel-price">$14.99</div>
+                                </div>
+                            </div>
+                            
+                            <div class="carousel-slide">
+                                <img src="img/unnamed.png" alt="Loaded Nachos">
+                                <div class="carousel-content">
+                                    <h4>Loaded Nachos</h4>
+                                    <p>Crispy tortilla chips piled high with cheese, jalapeños, and all your favorites.</p>
+                                    <div class="carousel-price">$12.99</div>
+                                </div>
+                            </div>
+                            
+                            <div class="carousel-slide">
+                                <img src="img/unnamed.png" alt="BBQ Wings">
+                                <div class="carousel-content">
+                                    <h4>BBQ Wings</h4>
+                                    <p>Tender chicken wings tossed in our house-made BBQ sauce.</p>
+                                    <div class="carousel-price">$11.99</div>
+                                </div>
+                            </div>
+                            
+                            <div class="carousel-slide">
+                                <img src="img/unnamed.png" alt="Fish & Chips">
+                                <div class="carousel-content">
+                                    <h4>Beer Battered Fish & Chips</h4>
+                                    <p>Fresh cod in our signature beer batter with golden fries.</p>
+                                    <div class="carousel-price">$15.99</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="carousel-controls carousel-prev" id="carousel-prev">‹</button>
+                        <button class="carousel-controls carousel-next" id="carousel-next">›</button>
+                        
+                        <div class="carousel-indicators" id="carousel-indicators">
+                            <div class="carousel-dot active"></div>
+                            <div class="carousel-dot"></div>
+                            <div class="carousel-dot"></div>
+                            <div class="carousel-dot"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Menu Section (moved from separate page) -->
                 <div class="section-heading">
                     <h3>Menu</h3>
@@ -90,8 +176,8 @@
                 <div class="menu-tabs">
                     <button class="tab-btn active" data-category="appetizers">Appetizers</button>
                     <button class="tab-btn" data-category="burgers">Burgers</button>
-                    <button class="tab-btn" data-category="sandwiches">Sandwiches</button>
-                    <button class="tab-btn" data-category="wraps">Wraps</button>
+                    <button class="tab-btn" data-category="mains">Mains</button>
+                    <button class="tab-btn" data-category="drinks">Drinks</button>
                 </div>
                 <div class="menu-items" id="menu-items">
                     <div class="loading-spinner">Loading menu items...</div>
@@ -157,7 +243,7 @@
                     
                     <div class="info-card">
                         <h3>About Us</h3>
-                        <p>Kalamazoo’s Oldest Neighborhood Dive Bar. The music is loud. The drinks are strong. The food is messy and amazing. The SugarBowl has been around since the ’40s, and we’re proud of it. Punk, metal, blues, country — if it rattles the walls, it belongs here. We’re for the weird, the loud, the misfits, the metalheads, the punks, the people who just want a good time. Basically, if you’re not a jerk, you fit in. Even if you think you don’t, you probably do. Live shows, DJs, karaoke that actually rocks — sometimes all at once. That’s the point, right?</p>
+                        <p>Established in 1997, SugarBowl has been serving up great food, cold drinks, and unforgettable nights for over 25 years. Our relaxed atmosphere makes us the perfect spot for lunch, dinner, or just hanging out with friends.</p>
                     </div>
                 </div>
             </section>
@@ -176,13 +262,6 @@
                 <p>© 2025 SugarBowl. All rights reserved.</p>
             </div>
         </footer>
-        
-        <nav class="main-nav">
-            <a href="#home" class="active"><i class="fas fa-home"></i></a>
-            <a href="#burger-special"><i class="fas fa-hamburger"></i></a>
-            <a href="#events"><i class="fas fa-calendar"></i></a>
-            <a href="#info"><i class="fas fa-info-circle"></i></a>
-        </nav>
     </div>
     
     <!-- Modal for event details -->
@@ -241,7 +320,7 @@
     <script src="js/main.js"></script>
     <script src="js/calendar.js"></script>
     <script type="module" src="js/menu.js"></script>
-    <script type="module" src="js/burger-special.js"></script>
+    <script src="js/carousels.js"></script>
     
     <!-- Service Worker Registration -->
     <script>

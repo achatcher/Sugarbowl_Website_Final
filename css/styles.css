@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------
-# Variables
+# Variables - Original SugarBowl Grunge Theme
 --------------------------------------------------------------*/
 :root {
     /* Color Scheme */
@@ -23,12 +23,12 @@
     --border-radius: 8px;
     --transition: all 0.3s ease;
     --grungy-highlight: rgba(255, 255, 255, 0.03);
-    --header-height: 60px;
-    --nav-height: 60px;
+    --header-height: 110px;          /* Updated for logo + nav */
+    --nav-height: 0px;               /* No longer needed */
 }
 
 /*--------------------------------------------------------------
-# Base Styles
+# Base Styles - Grunge Dive Bar Aesthetic
 --------------------------------------------------------------*/
 * {
     margin: 0;
@@ -54,12 +54,12 @@ body {
     max-width: 100%;
     background-image: url('../img/grunge-texture.png'), 
                       linear-gradient(to bottom, rgba(27, 32, 52, 0.3), rgba(0, 0, 0, 0));
-    background-color: var(--dark-bg); /* Fallback */
+    background-color: var(--dark-bg);
     background-blend-mode: overlay;
 }
 
 /*--------------------------------------------------------------
-# Layout & Container
+# Layout & Container - Updated for Top Nav
 --------------------------------------------------------------*/
 .app-container {
     display: flex;
@@ -74,8 +74,8 @@ body {
 main {
     flex: 1;
     padding: 15px;
-    padding-bottom: 100px; /* Space for fixed nav */
-    max-width: 600px; /* Limit content width on larger screens */
+    padding-bottom: 50px; /* Reduced since no bottom nav */
+    max-width: 600px;
     margin: 0 auto;
     width: 100%;
 }
@@ -84,7 +84,7 @@ main {
     display: none;
     animation: fadeIn 0.4s;
     padding-top: 10px;
-    padding-bottom: 70px; /* Space for bottom navigation */
+    padding-bottom: 20px; /* Reduced since no bottom nav */
 }
 
 .active-page {
@@ -92,13 +92,14 @@ main {
 }
 
 /*--------------------------------------------------------------
-# Header & Navigation
+# Header & Navigation - Top Unified Layout
 --------------------------------------------------------------*/
-/* Top Header with Logo */
 .top-header {
     background-color: var(--darker-bg);
-    height: var(--header-height);
+    height: auto; /* Allow flexible height */
+    min-height: 110px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
@@ -107,20 +108,21 @@ main {
     left: 0;
     width: 100%;
     z-index: 100;
-    padding: 0 15px;
-    border-bottom: 1px solid rgba(139, 0, 0, 0.3); /* Subtle red border */
+    padding: 15px;
+    border-bottom: 1px solid rgba(139, 0, 0, 0.3);
 }
 
 .logo {
     display: flex;
     align-items: center;
     gap: 10px;
+    margin-bottom: 12px;
 }
 
 .logo img {
     height: 40px;
     padding: 2px;
-    filter: drop-shadow(0 0 3px rgba(212, 175, 55, 0.5)); /* Gold glow */
+    filter: drop-shadow(0 0 3px rgba(212, 175, 55, 0.5));
     animation: subtle-pulse 4s infinite alternate ease-in-out;
 }
 
@@ -133,33 +135,38 @@ main {
     text-transform: uppercase;
 }
 
-/* Bottom Navigation */
+/* Main Navigation - Now in Top Header */
 .main-nav {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
+    gap: 40px;
     width: 100%;
-    background-color: var(--darker-bg);
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    z-index: 100;
-    border-top: 1px solid rgba(139, 0, 0, 0.3);
-    height: var(--nav-height);
+    max-width: 400px;
+    background: transparent;
+    box-shadow: none;
+    position: static; /* Remove fixed positioning */
+    bottom: auto;
+    left: auto;
+    z-index: auto;
+    border-top: none;
+    height: auto;
+    padding: 0;
 }
 
 .main-nav a {
     text-decoration: none;
     color: var(--muted-text);
-    font-size: 1.4rem;
-    padding: 15px 0;
-    width: 25%;
+    font-size: 1.3rem;
+    padding: 8px 12px;
+    width: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     transition: var(--transition);
     position: relative;
+    border-radius: var(--border-radius);
+    min-width: 60px;
 }
 
 .main-nav a:hover, 
@@ -171,34 +178,21 @@ main {
 .main-nav a.active::after {
     content: "";
     display: block;
-    width: 30px;
+    width: 20px;
     height: 2px;
     background-color: var(--primary-light);
     position: absolute;
-    bottom: 0;
+    bottom: 2px;
     border-radius: 2px;
 }
 
 .main-nav a i {
-    margin-bottom: 3px;
+    margin-bottom: 2px;
     filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
 }
 
-/* Notification indicator */
-.main-nav a.has-notification::after {
-    content: "";
-    position: absolute;
-    top: 6px;
-    right: calc(50% - 16px);
-    width: 6px;
-    height: 6px;
-    background-color: var(--accent-color);
-    border-radius: 50%;
-    animation: pulse 1.5s infinite;
-}
-
 /*--------------------------------------------------------------
-# Typography & Headings
+# Typography - Gritty Dive Bar Style
 --------------------------------------------------------------*/
 h2 {
     font-size: 1.8rem;
@@ -225,11 +219,6 @@ h3 {
     position: relative;
 }
 
-/* Removed the blue L-shaped decoration */
-.section-heading::before {
-    display: none;
-}
-
 .section-heading h3 {
     font-size: 1.5rem;
     padding-bottom: 8px;
@@ -248,7 +237,7 @@ h3 {
 }
 
 /*--------------------------------------------------------------
-# Buttons & Interactive Elements
+# Buttons - Grunge Interactive Elements
 --------------------------------------------------------------*/
 .btn {
     display: inline-block;
@@ -268,7 +257,6 @@ h3 {
     font-size: 0.9rem;
     position: relative;
     overflow: hidden;
-    will-change: transform;
 }
 
 .btn::after {
@@ -293,42 +281,13 @@ h3 {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-.btn:active {
-    animation: pulse 0.3s ease;
-}
-
 .btn-sm {
     padding: 6px 12px;
     font-size: 0.85rem;
 }
 
-/* Focus states for accessibility */
-:focus {
-    outline: 2px solid var(--primary-light);
-    outline-offset: 2px;
-}
-
-.btn:focus, 
-.tab-btn:focus, 
-.main-nav a:focus {
-    outline-color: var(--primary-light);
-}
-
-.btn:focus:not(:focus-visible), 
-.tab-btn:focus:not(:focus-visible), 
-.main-nav a:focus:not(:focus-visible) {
-    outline: none;
-}
-
-.btn:focus-visible, 
-.tab-btn:focus-visible, 
-.main-nav a:focus-visible {
-    outline: 2px solid var(--primary-light);
-    outline-offset: 2px;
-}
-
 /*--------------------------------------------------------------
-# Home Page Elements
+# Home Page - Dive Bar Entrance
 --------------------------------------------------------------*/
 .hero {
     background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)),
@@ -361,19 +320,6 @@ h3 {
     z-index: 1;
 }
 
-.hero::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: url('../img/scuff-overlay.png');
-    opacity: 0.1;
-    z-index: 1;
-    pointer-events: none;
-}
-
 .hero h2 {
     font-size: 2.2rem;
     border: none;
@@ -398,25 +344,14 @@ h3 {
     z-index: 2;
 }
 
-/* Quick Info Cards */
+/*--------------------------------------------------------------
+# Quick Info Cards - Grunge Style
+--------------------------------------------------------------*/
 .quick-info {
     display: flex;
     flex-direction: column;
     gap: 20px;
     position: relative;
-}
-
-.quick-info::after {
-    content: "";
-    position: absolute;
-    bottom: -15px;
-    left: 0;
-    right: 0;
-    height: 15px;
-    background-image: url('../img/torn-paper.png');
-    background-size: 100% 100%;
-    opacity: 0.1;
-    z-index: 1;
 }
 
 .info-card {
@@ -455,23 +390,6 @@ h3 {
     background-color: var(--accent-color);
 }
 
-/* Card grunge textures */
-.info-card::before, 
-.burger-spotlight::before, 
-.menu-item::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: url('../img/subtle-grunge.png');
-    opacity: 0.04;
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* Burger preview on homepage */
 .burger-preview {
     display: flex;
     flex-direction: column;
@@ -494,7 +412,6 @@ h3 {
     transform: scale(1.02);
 }
 
-/* Today's event card */
 .today-event {
     padding: 20px;
     border-left: 3px solid var(--primary-color);
@@ -523,33 +440,253 @@ h3 {
     display: block;
 }
 
-.today-event p {
-    margin-bottom: 15px;
-    color: var(--muted-text);
-    line-height: 1.5;
+/*--------------------------------------------------------------
+# Instagram Official Embed - Real Social Media Integration
+--------------------------------------------------------------*/
+.instagram-embed-container {
+    width: 100%;
+    margin-bottom: 24px;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    background: var(--darker-bg);
+    border: 1px solid rgba(75, 108, 196, 0.2);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+    padding: 10px;
 }
 
-.today-event .btn, 
-.today-event .view-all-btn {
-    margin-top: 15px;
-    align-self: flex-start;
+/* Style Instagram's official embed */
+.instagram-embed-container .instagram-media {
+    background: transparent !important;
+    border-radius: var(--border-radius) !important;
+    box-shadow: none !important;
+    margin: 0 auto !important;
+    max-width: 100% !important;
+    min-width: 280px !important;
+    width: calc(100% - 20px) !important;
+}
+
+/* Style the Instagram feed container */
+.instagram-feed {
+    margin: 30px 0;
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(75, 108, 196, 0.2);
+}
+
+.instagram-feed::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-dark), var(--primary-light));
+}
+
+.instagram-feed h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: var(--blue-text);
+    font-size: 1.4rem;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+    position: relative;
+}
+
+.instagram-feed h3::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 2px;
+    background-color: var(--accent-color);
+}
+
+.instagram-cta {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.instagram-follow-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--primary-color);
+    color: var(--light-text);
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: var(--transition);
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.instagram-follow-btn::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: 0.4s;
+}
+
+.instagram-follow-btn:hover::after {
+    left: 100%;
+}
+
+.instagram-follow-btn:hover {
+    background: var(--primary-light);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 /*--------------------------------------------------------------
-# Burger & Menu Page
+# Food Carousel - Grunge Style
 --------------------------------------------------------------*/
-/* Burger Spotlight */
+.food-carousel-section {
+    margin: 30px 0;
+}
+
+.food-carousel {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--border-radius);
+    background: var(--card-bg);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(75, 108, 196, 0.2);
+}
+
+.carousel-container {
+    display: flex;
+    transition: transform 0.5s ease;
+}
+
+.carousel-slide {
+    min-width: 100%;
+    position: relative;
+}
+
+.carousel-slide img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+}
+
+.carousel-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    padding: 20px;
+    color: var(--light-text);
+}
+
+.carousel-content h4 {
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+}
+
+.carousel-content p {
+    font-size: 0.9rem;
+    color: var(--muted-text);
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.carousel-price {
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.carousel-controls {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(10, 10, 10, 0.8);
+    color: var(--light-text);
+    border: none;
+    padding: 12px 10px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: var(--transition);
+    z-index: 2;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-prev {
+    left: 15px;
+}
+
+.carousel-next {
+    right: 15px;
+}
+
+.carousel-controls:hover {
+    background: var(--primary-color);
+    transform: translateY(-50%) scale(1.05);
+}
+
+.carousel-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding: 15px;
+    background: var(--card-bg);
+}
+
+.carousel-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--muted-text);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.carousel-dot.active {
+    background: var(--primary-color);
+    transform: scale(1.2);
+}
+
+/*--------------------------------------------------------------
+# Burger & Menu Page - Grunge Style
+--------------------------------------------------------------*/
 .burger-spotlight {
     background-color: var(--card-bg);
     border-radius: var(--border-radius);
-    padding: 0; /* Remove padding from outer container */
+    padding: 0;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     margin-bottom: 30px;
     overflow: hidden;
     border: 1px solid var(--card-bg);
 }
 
-/* Current burger section */
 .current-burger {
     background-color: var(--card-bg);
     border-radius: var(--border-radius);
@@ -560,7 +697,6 @@ h3 {
     position: relative;
 }
 
-/* Burger image */
 .burger-spotlight .burger-image,
 .current-burger img {
     width: 100%;
@@ -571,12 +707,6 @@ h3 {
     margin: 0 auto 20px auto;
     display: block;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-/* Burger titles and headings */
-.burger-spotlight h3 {
-    text-align: center;
-    margin-bottom: 15px;
 }
 
 .burger-spotlight h4,
@@ -590,7 +720,6 @@ h3 {
     text-align: center;
 }
 
-/* Burger price */
 .burger-spotlight .burger-price,
 .burger-info .price {
     color: var(--primary-color);
@@ -601,10 +730,9 @@ h3 {
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* Burger availability */
 .burger-spotlight .burger-availability {
-    color: var(--blue-text); /* Blue text */
-    background-color: rgba(43, 77, 168, 0.1); /* Transparent blue background */
+    color: var(--blue-text);
+    background-color: rgba(43, 77, 168, 0.1);
     padding: 8px 15px;
     border-radius: var(--border-radius);
     display: inline-block;
@@ -613,19 +741,8 @@ h3 {
     text-align: center;
 }
 
-/* Burger description */
-.burger-spotlight .burger-description,
-.burger-info p {
-    color: var(--muted-text);
-    margin: 15px 0;
-    font-size: 0.95rem;
-    line-height: 1.5;
-    text-align: center;
-}
-
-/* Ingredients section */
 .ingredients {
-    background-color: rgba(255, 255, 255, 0.05); /* Lighter background color */
+    background-color: rgba(255, 255, 255, 0.05);
     padding: 15px 20px;
     border-radius: var(--border-radius);
     margin: 20px 0;
@@ -633,17 +750,15 @@ h3 {
     width: 100%;
 }
 
-.burger-spotlight h5,
 .ingredients h5 {
     margin: 0 0 10px 0;
     font-size: 1.2rem;
-    color: var(--light-text); /* White text for "Ingredients:" */
+    color: var(--light-text);
     font-family: 'Bebas Neue', sans-serif;
     letter-spacing: 1px;
     text-align: left;
 }
 
-.burger-ingredients,
 .ingredients ul {
     list-style-type: disc;
     list-style-position: inside;
@@ -651,7 +766,6 @@ h3 {
     text-align: left;
 }
 
-.burger-ingredients li,
 .ingredients li {
     margin-bottom: 8px;
     color: var(--muted-text);
@@ -659,51 +773,10 @@ h3 {
     padding-left: 5px;
 }
 
-.ingredients li::marker,
-.burger-ingredients li::marker {
-    color: var(--accent-color); /* Red bullet points */
+.ingredients li::marker {
+    color: var(--accent-color);
 }
 
-/* Old availability style (keeping for reference) */
-.availability {
-    margin-top: 15px;
-    padding: 8px 12px;
-    background-color: rgba(139, 0, 0, 0.15);
-    border-radius: var(--border-radius);
-    display: inline-block;
-    font-weight: 500;
-    border: 1px dashed rgba(139, 0, 0, 0.3);
-}
-
-/* Burger info section */
-.burger-info {
-    text-align: center;
-    margin-bottom: 15px;
-    width: 100%;
-    position: relative;
-    z-index: 1;
-}
-
-/* Distressed border effect */
-.distressed-border {
-    position: relative;
-}
-
-.distressed-border::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border: 1px solid var(--primary-light);
-    border-radius: var(--border-radius);
-    filter: url(#distressFilter);
-    pointer-events: none;
-    opacity: 0.5;
-}
-
-/* Menu tabs */
 .menu-tabs {
     display: flex;
     overflow-x: auto;
@@ -711,7 +784,6 @@ h3 {
     margin-bottom: 20px;
     padding-bottom: 8px;
     scrollbar-width: thin;
-    -webkit-overflow-scrolling: touch;
 }
 
 .menu-tabs::-webkit-scrollbar {
@@ -740,19 +812,9 @@ h3 {
     overflow: hidden;
 }
 
-.tab-btn::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 0;
-    height: 2px;
-    background-color: var(--primary-light);
-    transition: width 0.3s ease;
-}
-
-.tab-btn:hover::before {
-    width: 100%;
+.tab-btn:hover {
+    color: var(--primary-light);
+    background-color: rgba(43, 77, 168, 0.1);
 }
 
 .tab-btn.active {
@@ -761,12 +823,6 @@ h3 {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.tab-btn.active::before {
-    width: 100%;
-    background-color: var(--accent-color);
-}
-
-/* Menu items */
 .menu-item {
     background-color: var(--card-bg);
     padding: 16px;
@@ -776,7 +832,6 @@ h3 {
     border-left: 3px solid transparent;
     transition: var(--transition);
     position: relative;
-    will-change: transform;
 }
 
 .menu-item:hover {
@@ -784,13 +839,7 @@ h3 {
     transform: translateX(2px);
 }
 
-.menu-item-info {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-}
-
-.menu-item-info h4 {
+.menu-item h4 {
     font-size: 1.1rem;
     margin-bottom: 8px;
     color: var(--light-text);
@@ -801,15 +850,7 @@ h3 {
     text-align: left;
 }
 
-.menu-item-info h4::after {
-    content: "";
-    flex-grow: 1;
-    height: 1px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.1), transparent);
-    margin-left: 10px;
-}
-
-.menu-item-info p {
+.menu-item p {
     font-size: 0.9rem;
     color: var(--muted-text);
     margin-bottom: 12px;
@@ -828,94 +869,7 @@ h3 {
 }
 
 /*--------------------------------------------------------------
-# Hours & Info Page
---------------------------------------------------------------*/
-.info-section {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.hours-list {
-    list-style: none;
-    padding: 0;
-}
-
-.hours-list li {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
-}
-
-.hours-list li:last-child {
-    border-bottom: none;
-}
-
-.happy-hour {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--blue-text); 
-    text-align: center;
-    padding: 10px;
-    background-color: rgba(43, 77, 168, 0.1); 
-    border-radius: var(--border-radius);
-    margin-bottom: 15px;
-}
-
-.happy-hour-deals {
-    list-style: none;
-    padding: 0 0 0 5px;
-}
-
-.happy-hour-deals li {
-    padding: 6px 0;
-    position: relative;
-    padding-left: 20px;
-}
-
-.happy-hour-deals li::before {
-    content: "•";
-    color: var(--accent-color);
-    position: absolute;
-    left: 0;
-    font-size: 1.2rem;
-}
-
-.location-info {
-    margin-bottom: 15px;
-}
-
-.location-info p {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
-    color: var(--light-text);
-}
-
-.location-info p i {
-    color: var(--primary-light);
-    width: 20px;
-    text-align: center;
-}
-
-.map-container {
-    width: 100%;
-    height: 180px;
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    margin-top: 15px;
-}
-
-.location-map {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/*--------------------------------------------------------------
-# Events Calendar
+# Calendar - Grunge Style
 --------------------------------------------------------------*/
 .month-navigation {
     display: flex;
@@ -940,11 +894,6 @@ h3 {
 
 .month-navigation button:hover {
     background: var(--accent-color);
-}
-
-.month-navigation h3 {
-    margin: 0;
-    font-size: 1.1rem;
 }
 
 .calendar {
@@ -1023,10 +972,9 @@ h3 {
 }
 
 /*--------------------------------------------------------------
-# Modal & Dialog Styles
+# Modal & Dialog - Grunge Style
 --------------------------------------------------------------*/
-/* Day modal styling */
-.day-modal {
+.day-modal, .modal {
     display: none;
     position: fixed;
     top: 0;
@@ -1040,7 +988,7 @@ h3 {
     padding: 15px;
 }
 
-.day-modal-content {
+.day-modal-content, .modal-content {
     background-color: var(--card-bg);
     padding: 20px;
     border-radius: var(--border-radius);
@@ -1053,7 +1001,7 @@ h3 {
     border: 1px solid rgba(139, 0, 0, 0.2);
 }
 
-.close-day-modal {
+.close-day-modal, .close-modal {
     position: absolute;
     top: 10px;
     right: 15px;
@@ -1069,7 +1017,7 @@ h3 {
     transition: color 0.2s ease;
 }
 
-.close-day-modal:hover {
+.close-day-modal:hover, .close-modal:hover {
     color: var(--accent-color);
 }
 
@@ -1081,10 +1029,6 @@ h3 {
     padding-bottom: 10px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--light-text);
-}
-
-.event-list {
-    margin-top: 15px;
 }
 
 .event-item {
@@ -1102,94 +1046,169 @@ h3 {
     transform: translateX(3px);
 }
 
-.event-item h4 {
-    font-size: 1.05rem;
-    margin-bottom: 6px;
+.event-modal-image {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+    margin-bottom: 12px;
+    border: 1px solid rgba(75, 108, 196, 0.2);
+}
+
+.event-details h4 {
     color: var(--light-text);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
 }
 
-.event-time {
-    font-size: 0.85rem;
+.event-details .event-time {
     color: var(--primary-color);
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    margin: 10px 0;
     font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 12px;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.5px;
 }
 
-.event-desc {
-    font-size: 0.85rem;
+.event-details .event-description {
     color: var(--muted-text);
     line-height: 1.5;
-}
-
-.no-events {
-    text-align: center;
-    padding: 25px 15px;
-    color: var(--muted-text);
-    font-style: italic;
-    background-color: rgba(0, 0, 0, 0.1);
-    border-radius: var(--border-radius);
-    border: 1px dashed rgba(255, 255, 255, 0.1);
-}
-
-/* General modal styles */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.85);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-    padding: 15px;
-}
-
-.modal-content {
-    background-color: var(--card-bg);
-    padding: 20px;
-    border-radius: var(--border-radius);
-    width: 100%;
-    max-width: 350px;
-    max-height: 80vh;
-    overflow-y: auto;
-    position: relative;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(139, 0, 0, 0.2);
-}
-
-.close-modal {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 1.4rem;
-    cursor: pointer;
-    color: var(--muted-text);
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 5;
-    transition: color 0.2s ease;
-}
-
-.close-modal:hover {
-    color: var(--accent-color);
+    margin-bottom: 12px;
 }
 
 /*--------------------------------------------------------------
-# Footer
+# Info Section Layout - Separate Lines for Location and About Us
+--------------------------------------------------------------*/
+.info-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Mobile: All cards stacked */
+@media (max-width: 767px) {
+    .info-section {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .info-card {
+        width: 100%;
+    }
+}
+
+/* Desktop: Hours and Happy Hour side by side, then Location full width, then About Us full width */
+@media (min-width: 768px) {
+    .info-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto auto;
+        gap: 25px;
+    }
+    
+    /* First row: Hours and Happy Hour side by side */
+    .info-card:nth-child(1) { /* Hours */
+        grid-column: 1;
+        grid-row: 1;
+    }
+    
+    .info-card:nth-child(2) { /* Happy Hour */
+        grid-column: 2;
+        grid-row: 1;
+    }
+    
+    /* Second row: Location spans full width */
+    .info-card:nth-child(3) { /* Location */
+        grid-column: 1 / -1;
+        grid-row: 2;
+    }
+    
+    /* Third row: About Us spans full width */
+    .info-card:nth-child(4) { /* About Us */
+        grid-column: 1 / -1;
+        grid-row: 3;
+    }
+}
+
+.hours-list {
+    list-style: none;
+    padding: 0;
+}
+
+.hours-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.hours-list li:last-child {
+    border-bottom: none;
+}
+
+.happy-hour {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--blue-text);
+    text-align: center;
+    padding: 10px;
+    background-color: rgba(43, 77, 168, 0.1);
+    border-radius: var(--border-radius);
+    margin-bottom: 15px;
+}
+
+.happy-hour-deals {
+    list-style: none;
+    padding: 0 0 0 5px;
+}
+
+.happy-hour-deals li {
+    padding: 6px 0;
+    position: relative;
+    padding-left: 20px;
+}
+
+.happy-hour-deals li::before {
+    content: "•";
+    color: var(--accent-color);
+    position: absolute;
+    left: 0;
+    font-size: 1.2rem;
+}
+
+.location-info p {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    color: var(--light-text);
+}
+
+.location-info p i {
+    color: var(--primary-light);
+    width: 20px;
+    text-align: center;
+}
+
+.map-container {
+    width: 100%;
+    height: 180px;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    margin-top: 15px;
+}
+
+/*--------------------------------------------------------------
+# Footer - Updated for Top Nav
 --------------------------------------------------------------*/
 footer {
     background-color: var(--darker-bg);
     padding: 25px 15px;
     text-align: center;
-    margin-bottom: 65px; /* Space for fixed nav */
+    margin-bottom: 0; /* No bottom nav, so no margin needed */
     position: relative;
     border-top: 1px solid rgba(255,255,255,0.05);
 }
@@ -1259,7 +1278,7 @@ footer::before {
 }
 
 /*--------------------------------------------------------------
-# Loading Spinner
+# Loading Spinner - Grunge Style
 --------------------------------------------------------------*/
 .loading-spinner {
     display: flex;
@@ -1287,6 +1306,119 @@ footer::before {
 }
 
 /*--------------------------------------------------------------
+# Responsive Navigation
+--------------------------------------------------------------*/
+@media (max-width: 480px) {
+    .main-nav {
+        gap: 25px;
+    }
+    
+    .main-nav a {
+        font-size: 1.1rem;
+        padding: 6px 8px;
+        min-width: 50px;
+    }
+    
+    .logo img {
+        height: 35px;
+    }
+    
+    .logo h1 {
+        font-size: 1.3rem;
+    }
+    
+    .top-header {
+        min-height: 95px;
+        padding: 12px;
+    }
+}
+
+/*--------------------------------------------------------------
+# Enhanced Desktop Layout
+--------------------------------------------------------------*/
+@media (min-width: 768px) {
+    main {
+        padding: 20px;
+        max-width: 800px;
+    }
+    
+    .hero {
+        height: 250px;
+    }
+    
+    .hero h2 {
+        font-size: 2.5rem;
+    }
+    
+    /* Side-by-side layout for desktop */
+    .quick-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+        margin-bottom: 35px;
+    }
+    
+    /* Instagram feed spans full width below */
+    .instagram-feed {
+        grid-column: 1 / -1;
+        margin-top: 0;
+        padding: 25px;
+    }
+    
+    .instagram-feed h3 {
+        font-size: 1.6rem;
+        margin-bottom: 25px;
+    }
+    
+    .instagram-embed-container {
+        padding: 15px;
+    }
+    
+    .carousel-slide img {
+        height: 300px;
+    }
+    
+    .modal-content, 
+    .day-modal-content {
+        max-width: 450px;
+    }
+    
+    .top-header {
+        min-height: 120px;
+        padding: 20px;
+    }
+    
+    .main-nav {
+        gap: 50px;
+        max-width: 500px;
+    }
+    
+    .main-nav a {
+        font-size: 1.4rem;
+        padding: 10px 15px;
+        min-width: 70px;
+    }
+    
+    .logo {
+        margin-bottom: 15px;
+    }
+    
+    .logo img {
+        height: 45px;
+    }
+    
+    .logo h1 {
+        font-size: 1.6rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .instagram-feed {
+        padding: 30px;
+    }
+}
+
+/*--------------------------------------------------------------
 # Animation Keyframes
 --------------------------------------------------------------*/
 @keyframes fadeIn {
@@ -1311,13 +1443,38 @@ footer::before {
 }
 
 /*--------------------------------------------------------------
-# iOS and Device Fixes
+# Accessibility & Device Support
 --------------------------------------------------------------*/
-/* Fix for iOS devices to prevent 100vh issues */
-html, body {
-    height: 100%;
-    overflow-x: hidden;
-    max-width: 100%;
+@media (prefers-reduced-motion: reduce) {
+    .btn:hover, 
+    .menu-item:hover, 
+    .event-item:hover, 
+    .social-links a:hover, 
+    .burger-preview:hover img {
+        transform: none;
+    }
+    
+    .btn::after,
+    .instagram-follow-btn::after {
+        display: none;
+    }
+    
+    html {
+        scroll-behavior: auto;
+    }
+    
+    .logo img {
+        animation: none;
+    }
+}
+
+@media (prefers-contrast: high) {
+    :root {
+        --primary-color: #2045ad;
+        --accent-color: #b30000;
+        --light-text: #ffffff;
+        --muted-text: #cccccc;
+    }
 }
 
 @supports (-webkit-touch-callout: none) {
@@ -1330,94 +1487,6 @@ html, body {
     }
 }
 
-/* When virtual keyboard is open on mobile */
-@media screen and (max-height: 450px) {
-    .main-nav {
-        position: absolute;
-    }
-}
-
-/* Form element styling */
-input, textarea, select, button {
-    font-family: 'Poppins', sans-serif;
-}
-
-/*--------------------------------------------------------------
-# Responsive Design
---------------------------------------------------------------*/
-/* Medium screens and up */
-@media (min-width: 768px) {
-    main {
-        padding: 20px;
-    }
-    
-    .hero {
-        height: 250px;
-    }
-    
-    .hero h2 {
-        font-size: 2.5rem;
-    }
-    
-    .menu-item:hover {
-        transform: translateX(5px);
-    }
-    
-    .modal-content, 
-    .day-modal-content {
-        max-width: 450px;
-    }
-}
-
-/*--------------------------------------------------------------
-# Accessibility
---------------------------------------------------------------*/
-/* High contrast mode */
-@media (prefers-contrast: high) {
-    :root {
-        --primary-color: #2045ad;
-        --accent-color: #b30000;
-        --light-text: #ffffff;
-        --muted-text: #cccccc;
-    }
-    
-    .ingredients li,
-    .menu-item-info p {
-        color: #b8b8b8;
-    }
-}
-
-/* Reduced motion preferences */
-@media (prefers-reduced-motion: reduce) {
-    .btn:hover, 
-    .btn:focus, 
-    .menu-item:hover, 
-    .event-item:hover, 
-    .social-links a:hover, 
-    .burger-preview:hover img {
-        transform: none;
-        transition: none;
-    }
-    
-    .btn::after {
-        display: none;
-    }
-    
-    @keyframes rotation {
-        0% { opacity: 0.7; }
-        100% { opacity: 1; }
-    }
-    
-    html {
-        scroll-behavior: auto;
-    }
-    
-    .logo img {
-        animation: none;
-    }
-}
-
-
 /*--------------------------------------------------------------
 # Print Styles
 --------------------------------------------------------------*/
@@ -1428,126 +1497,27 @@ input, textarea, select, button {
         color: black;
     }
     
-    .app-container {
-        padding: 0;
-    }
-    
     .top-header, 
     .main-nav, 
-    footer {
+    footer,
+    .btn,
+    .instagram-feed,
+    .food-carousel-section {
         display: none;
-    }
-    
-    main {
-        padding: 0;
     }
     
     .info-card, 
     .menu-item {
-        break-inside: avoid;
-        page-break-inside: avoid;
-        border: 1px solid #ccc;
+        border: 1px solid #000;
         color: black;
         background: white;
+        box-shadow: none;
     }
     
-    a {
-        text-decoration: none;
+    h2, h3, h4 {
         color: black;
-    }
-    
-    .btn {
-        display: none;
-    }
-    
-    h2, 
-    h3 {
-        color: black;
+        text-shadow: none;
     }
 }
 
-/* Backend Integration Styles */
-.loading-spinner {
-    text-align: center;
-    padding: 2rem;
-    color: var(--text-color);
-    font-style: italic;
-}
-
-.error-message {
-    text-align: center;
-    padding: 2rem;
-    color: #ff6b6b;
-    background: rgba(255, 107, 107, 0.1);
-    border-radius: var(--border-radius);
-    margin: 1rem 0;
-}
-
-.no-items, .no-special {
-    text-align: center;
-    padding: 2rem;
-    color: var(--text-color);
-    font-style: italic;
-    opacity: 0.7;
-}
-
-/* Enhanced burger special styling */
-.burger-special-content {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 2rem;
-    align-items: start;
-}
-
-.burger-image {
-    width: 100%;
-    height: auto;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-}
-
-.burger-details h4 {
-    margin-bottom: 0.5rem;
-    color: var(--primary-color);
-}
-
-.burger-availability {
-    font-size: 0.9rem;
-    color: var(--text-color);
-    opacity: 0.8;
-    margin-bottom: 1rem;
-}
-
-.burger-description {
-    margin-bottom: 1rem;
-    line-height: 1.6;
-}
-
-.burger-price {
-    font-size: 1.4rem;
-    font-weight: bold;
-    color: var(--accent-color);
-}
-
-/* Menu item images */
-.menu-item-image {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: var(--border-radius);
-    margin-bottom: 1rem;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .burger-special-content {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    
-    .menu-item-image {
-        height: 150px;
-    }
-}
-
-/* End of styles.css */
+/* End of complete SugarBowl grunge stylesheet */

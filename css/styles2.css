@@ -1,0 +1,1709 @@
+/*--------------------------------------------------------------
+# Variables - Star Bar Rocks Inspired Dark Theme
+--------------------------------------------------------------*/
+:root {
+    /* Dark Rock Club Color Scheme */
+    --primary-color: #ff0080;           /* Hot neon pink */
+    --primary-light: #ff33a1;          /* Lighter neon pink */
+    --primary-dark: #cc0066;           /* Darker pink */
+    --accent-color: #00ffff;           /* Electric cyan */
+    --accent-secondary: #ffff00;       /* Neon yellow */
+    --warning-color: #ff4444;          /* Danger red */
+    
+    /* Deep Dark Backgrounds */
+    --dark-bg: #0a0a0a;               /* Almost black */
+    --darker-bg: #000000;             /* Pure black */
+    --card-bg: #111111;               /* Dark cards */
+    --card-highlight: #1a1a1a;        /* Subtle highlight */
+    
+    /* Text Colors */
+    --light-text: #ffffff;            /* Pure white text */
+    --neon-text: #00ff00;            /* Neon green */
+    --muted-text: #888888;           /* Gray text */
+    --danger-text: #ff6666;          /* Light red */
+    
+    /* Layout & Effects */
+    --border-radius: 4px;            /* Sharp edges */
+    --transition: all 0.2s ease;    /* Snappy transitions */
+    --glow-effect: 0 0 10px;        /* Neon glow */
+    --header-height: 70px;
+    --nav-height: 70px;
+}
+
+/*--------------------------------------------------------------
+# Base Styles - Grungy Underground Aesthetic
+--------------------------------------------------------------*/
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: var(--header-height);
+}
+
+body {
+    font-family: 'Bebas Neue', 'Arial Black', sans-serif;
+    background: var(--darker-bg);
+    color: var(--light-text);
+    line-height: 1.4;
+    font-size: 16px;
+    overflow-x: hidden;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    
+    /* Layered grunge textures */
+    background-image: 
+        radial-gradient(circle at 20% 20%, rgba(255, 0, 128, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+        linear-gradient(45deg, transparent 49%, rgba(255, 255, 255, 0.01) 50%, transparent 51%);
+    
+    /* Subtle noise texture */
+    position: relative;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 2px,
+            rgba(255, 255, 255, 0.005) 2px,
+            rgba(255, 255, 255, 0.005) 4px
+        );
+    pointer-events: none;
+    z-index: -1;
+}
+
+/*--------------------------------------------------------------
+# Layout & Container
+--------------------------------------------------------------*/
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    max-width: 100vw;
+    overflow-x: hidden;
+    position: relative;
+    padding-top: var(--header-height);
+    background: var(--darker-bg);
+}
+
+main {
+    flex: 1;
+    padding: 20px;
+    padding-bottom: 100px;
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+    position: relative;
+}
+
+.page {
+    display: none;
+    animation: glitchIn 0.3s;
+    padding-top: 15px;
+    padding-bottom: 80px;
+}
+
+.active-page {
+    display: block;
+}
+
+/*--------------------------------------------------------------
+# Header & Navigation - Underground Club Style
+--------------------------------------------------------------*/
+.top-header {
+    background: linear-gradient(135deg, var(--darker-bg) 0%, #111 100%);
+    height: var(--header-height);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    padding: 0 20px;
+    border-bottom: 2px solid var(--primary-color);
+    box-shadow: 0 0 20px rgba(255, 0, 128, 0.3);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    position: relative;
+}
+
+.logo img {
+    height: 50px;
+    filter: 
+        drop-shadow(0 0 8px var(--primary-color))
+        drop-shadow(0 0 15px rgba(255, 0, 128, 0.5));
+    animation: neonPulse 2s infinite alternate ease-in-out;
+}
+
+.logo h1 {
+    font-size: 2rem;
+    font-weight: 900;
+    font-family: 'Bebas Neue', sans-serif;
+    color: var(--light-text);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-shadow: 
+        0 0 5px var(--accent-color),
+        0 0 10px var(--accent-color),
+        0 0 15px var(--accent-color);
+}
+
+/* Bottom Navigation - Neon Style */
+.main-nav {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    background: linear-gradient(180deg, var(--darker-bg) 0%, #000 100%);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    border-top: 2px solid var(--primary-color);
+    height: var(--nav-height);
+    box-shadow: 0 0 20px rgba(255, 0, 128, 0.3);
+}
+
+.main-nav a {
+    text-decoration: none;
+    color: var(--muted-text);
+    font-size: 1.6rem;
+    padding: 15px 0;
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    position: relative;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.main-nav a:last-child {
+    border-right: none;
+}
+
+.main-nav a:hover {
+    color: var(--primary-color);
+    text-shadow: var(--glow-effect) var(--primary-color);
+    background: rgba(255, 0, 128, 0.1);
+}
+
+.main-nav a.active {
+    color: var(--accent-color);
+    text-shadow: var(--glow-effect) var(--accent-color);
+    background: rgba(0, 255, 255, 0.15);
+}
+
+.main-nav a.active::after {
+    content: "";
+    display: block;
+    width: 40px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    position: absolute;
+    bottom: 0;
+    border-radius: 3px;
+    box-shadow: var(--glow-effect) var(--accent-color);
+}
+
+/*--------------------------------------------------------------
+# Typography - Bold Rock Aesthetic
+--------------------------------------------------------------*/
+h2 {
+    font-size: 2.2rem;
+    margin-bottom: 25px;
+    color: var(--light-text);
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    position: relative;
+    text-shadow: 
+        2px 2px 0 #000,
+        0 0 10px var(--primary-color);
+}
+
+h2::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    border-radius: 2px;
+    box-shadow: var(--glow-effect) var(--primary-color);
+}
+
+h3 {
+    font-size: 1.6rem;
+    margin-bottom: 15px;
+    color: var(--accent-color);
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 2px;
+    text-shadow: var(--glow-effect) var(--accent-color);
+}
+
+.section-heading {
+    margin: 35px 0 20px;
+    position: relative;
+}
+
+.section-heading h3 {
+    font-size: 1.8rem;
+    padding-bottom: 10px;
+    display: inline-block;
+    position: relative;
+}
+
+.section-heading h3::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--warning-color), var(--accent-secondary));
+    box-shadow: var(--glow-effect) var(--warning-color);
+}
+
+/*--------------------------------------------------------------
+# Buttons - Neon Interactive Elements
+--------------------------------------------------------------*/
+.btn {
+    display: inline-block;
+    padding: 12px 25px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: var(--light-text);
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    font-weight: 900;
+    transition: var(--transition);
+    border: 2px solid var(--primary-color);
+    cursor: pointer;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.95rem;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Bebas Neue', sans-serif;
+    box-shadow: 
+        0 0 15px rgba(255, 0, 128, 0.4),
+        inset 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+.btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn:hover {
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    border-color: var(--accent-color);
+    text-shadow: var(--glow-effect) var(--light-text);
+    box-shadow: 
+        0 0 25px rgba(0, 255, 255, 0.6),
+        inset 0 0 20px rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+}
+
+/*--------------------------------------------------------------
+# Home Page - Underground Club Entrance
+--------------------------------------------------------------*/
+.hero {
+    background: 
+        linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)),
+        url('../img/background2.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 250px;
+    border-radius: var(--border-radius);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 25px;
+    margin-bottom: 35px;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid var(--primary-color);
+    box-shadow: 
+        0 0 30px rgba(255, 0, 128, 0.4),
+        inset 0 0 50px rgba(0, 0, 0, 0.5);
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 20px,
+            rgba(255, 0, 128, 0.1) 20px,
+            rgba(255, 0, 128, 0.1) 22px
+        );
+    z-index: 1;
+}
+
+.hero h2 {
+    font-size: 2.8rem;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 2;
+    text-shadow: 
+        2px 2px 0 #000,
+        0 0 20px var(--primary-color),
+        0 0 30px var(--primary-color);
+    animation: textGlow 3s infinite alternate;
+}
+
+.hero p {
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 2;
+    font-size: 1.1rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    color: var(--accent-color);
+}
+
+.hero .btn {
+    position: relative;
+    z-index: 2;
+}
+
+/* Quick Info Cards - Distressed Style */
+.quick-info {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    position: relative;
+}
+
+.info-card {
+    background: linear-gradient(135deg, var(--card-bg) 0%, #0a0a0a 100%);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--primary-color);
+    box-shadow: 
+        0 0 15px rgba(255, 0, 128, 0.2),
+        inset 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.info-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--primary-color));
+    animation: scanline 2s infinite;
+}
+
+.info-card h3 {
+    position: relative;
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+    color: var(--light-text);
+}
+
+.info-card h3::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 2px;
+        background: var(--accent-color);
+    box-shadow: var(--glow-effect) var(--accent-color);
+}
+
+/* Burger preview - Neon showcase */
+.burger-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+
+.burger-preview img {
+    width: 100%;
+    max-width: 300px;
+    border-radius: var(--border-radius);
+    margin-bottom: 18px;
+    object-fit: cover;
+    height: 180px;
+    border: 2px solid var(--accent-color);
+    box-shadow: 
+        0 0 20px rgba(0, 255, 255, 0.4),
+        inset 0 0 20px rgba(0, 0, 0, 0.3);
+    transition: var(--transition);
+}
+
+.burger-preview:hover img {
+    transform: scale(1.03);
+    box-shadow: 
+        0 0 30px rgba(0, 255, 255, 0.6),
+        inset 0 0 25px rgba(0, 0, 0, 0.4);
+}
+
+/* Today's event - Alert style */
+.today-event {
+    padding: 25px;
+    border-left: 4px solid var(--accent-color);
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.1) 0%, rgba(255, 0, 128, 0.05) 100%);
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    position: relative;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.today-event::before {
+    content: "LIVE";
+    position: absolute;
+    top: -2px;
+    right: 10px;
+    background: var(--warning-color);
+    color: var(--light-text);
+    padding: 2px 8px;
+    font-size: 0.7rem;
+    font-weight: 900;
+    border-radius: 0 0 4px 4px;
+    animation: blink 1.5s infinite;
+}
+
+.today-event h2 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: var(--light-text);
+    text-shadow: var(--glow-effect) var(--accent-color);
+}
+
+.today-event .event-time {
+    color: var(--accent-secondary);
+    font-weight: 900;
+    margin: 15px 0;
+    font-size: 1.1rem;
+    text-shadow: var(--glow-effect) var(--accent-secondary);
+}
+
+/*--------------------------------------------------------------
+# Burger & Menu Page - Rock Club Menu
+--------------------------------------------------------------*/
+.burger-spotlight {
+    background: linear-gradient(135deg, var(--card-bg) 0%, #000 100%);
+    border-radius: var(--border-radius);
+    padding: 0;
+    margin-bottom: 35px;
+    overflow: hidden;
+    border: 2px solid var(--primary-color);
+    box-shadow: 
+        0 0 25px rgba(255, 0, 128, 0.3),
+        inset 0 0 30px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.burger-spotlight::before {
+    content: "SPECIAL";
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: var(--accent-secondary);
+    color: var(--darker-bg);
+    padding: 5px 12px;
+    font-size: 0.8rem;
+    font-weight: 900;
+    border-radius: var(--border-radius);
+    z-index: 2;
+    animation: pulse 2s infinite;
+}
+
+.current-burger {
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.burger-spotlight .burger-image,
+.current-burger img {
+    width: 100%;
+    max-width: 320px;
+    border-radius: var(--border-radius);
+    object-fit: cover;
+    height: 200px;
+    margin: 0 auto 25px auto;
+    border: 2px solid var(--accent-color);
+    box-shadow: 
+        0 0 20px rgba(0, 255, 255, 0.4),
+        inset 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.burger-spotlight h4,
+.current-burger h4,
+.burger-info h4 {
+    font-size: 1.8rem;
+    color: var(--light-text);
+    margin-bottom: 12px;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 2px;
+    text-align: center;
+    text-shadow: 
+        2px 2px 0 #000,
+        0 0 15px var(--primary-color);
+}
+
+.burger-spotlight .burger-price,
+.burger-info .price {
+    color: var(--accent-secondary);
+    font-weight: 900;
+    font-size: 1.6rem;
+    text-align: center;
+    margin: 15px 0;
+    text-shadow: 
+        2px 2px 0 #000,
+        var(--glow-effect) var(--accent-secondary);
+    font-family: 'Bebas Neue', sans-serif;
+}
+
+.burger-spotlight .burger-availability {
+    color: var(--neon-text);
+    background: rgba(0, 255, 0, 0.1);
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--neon-text);
+    margin: 15px 0;
+    font-weight: 700;
+    text-align: center;
+    box-shadow: 
+        0 0 15px rgba(0, 255, 0, 0.3),
+        inset 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Ingredients - Grunge list style */
+.ingredients {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    margin: 25px 0;
+    border: 1px solid var(--muted-text);
+    position: relative;
+}
+
+.ingredients::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--warning-color), transparent, var(--warning-color));
+}
+
+.ingredients h5 {
+    margin: 0 0 15px 0;
+    font-size: 1.3rem;
+    color: var(--light-text);
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 2px;
+    text-shadow: var(--glow-effect) var(--primary-color);
+}
+
+.ingredients ul {
+    list-style: none;
+    padding: 0;
+}
+
+.ingredients li {
+    margin-bottom: 10px;
+    color: var(--muted-text);
+    position: relative;
+    padding-left: 20px;
+    font-size: 0.95rem;
+}
+
+.ingredients li::before {
+    content: "▶";
+    color: var(--accent-color);
+    position: absolute;
+    left: 0;
+    font-size: 0.8rem;
+    text-shadow: var(--glow-effect) var(--accent-color);
+}
+
+/* Menu tabs - Underground style */
+.menu-tabs {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    scrollbar-width: thin;
+}
+
+.menu-tabs::-webkit-scrollbar {
+    height: 4px;
+}
+
+.menu-tabs::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 2px;
+}
+
+.tab-btn {
+    background: var(--darker-bg);
+    color: var(--muted-text);
+    border: 2px solid var(--primary-color);
+    border-radius: var(--border-radius);
+    padding: 12px 20px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: var(--transition);
+    flex-shrink: 0;
+    font-weight: 900;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Bebas Neue', sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+.tab-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 0, 128, 0.3), transparent);
+    transition: 0.4s;
+}
+
+.tab-btn:hover::before {
+    left: 100%;
+}
+
+.tab-btn:hover {
+    color: var(--primary-color);
+    text-shadow: var(--glow-effect) var(--primary-color);
+    box-shadow: 0 0 15px rgba(255, 0, 128, 0.3);
+}
+
+.tab-btn.active {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: var(--light-text);
+    border-color: var(--accent-color);
+    box-shadow: 
+        0 0 20px rgba(255, 0, 128, 0.5),
+        inset 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+/* Menu items - Distressed cards */
+.menu-item {
+    background: linear-gradient(135deg, var(--card-bg) 0%, #0a0a0a 100%);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    border: 1px solid var(--primary-color);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--primary-color), var(--accent-color));
+    transition: var(--transition);
+}
+
+.menu-item:hover {
+    transform: translateX(5px);
+    box-shadow: 
+        0 0 20px rgba(255, 0, 128, 0.3),
+        inset 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.menu-item:hover::before {
+    width: 8px;
+    box-shadow: var(--glow-effect) var(--primary-color);
+}
+
+.menu-item h4 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    color: var(--light-text);
+    font-weight: 900;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+}
+
+.menu-item h4::after {
+    content: "";
+    flex-grow: 1;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(255, 0, 128, 0.3), transparent);
+    margin-left: 15px;
+}
+
+.menu-item p {
+    font-size: 0.9rem;
+    color: var(--muted-text);
+    margin-bottom: 15px;
+    line-height: 1.4;
+    text-transform: none;
+}
+
+.menu-item-price {
+    font-weight: 900;
+    color: var(--accent-secondary);
+    font-size: 1.2rem;
+    background: rgba(255, 255, 0, 0.1);
+    padding: 5px 12px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--accent-secondary);
+    text-shadow: var(--glow-effect) var(--accent-secondary);
+    font-family: 'Bebas Neue', sans-serif;
+}
+
+/*--------------------------------------------------------------
+# Hours & Info Page - Underground Details
+--------------------------------------------------------------*/
+.info-section {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.hours-list {
+    list-style: none;
+    padding: 0;
+}
+
+.hours-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 0, 128, 0.2);
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+}
+
+.hours-list li:last-child {
+    border-bottom: none;
+}
+
+.hours-list li span:first-child {
+    color: var(--accent-color);
+}
+
+.hours-list li span:last-child {
+    color: var(--light-text);
+    font-weight: 700;
+}
+
+.happy-hour {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--accent-secondary);
+    text-align: center;
+    padding: 15px;
+    background: rgba(255, 255, 0, 0.1);
+    border: 2px solid var(--accent-secondary);
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    text-shadow: var(--glow-effect) var(--accent-secondary);
+    font-family: 'Bebas Neue', sans-serif;
+    animation: pulse 3s infinite;
+}
+
+.happy-hour-deals {
+    list-style: none;
+    padding: 0;
+}
+
+.happy-hour-deals li {
+    padding: 8px 0;
+    position: relative;
+    padding-left: 25px;
+    color: var(--light-text);
+}
+
+.happy-hour-deals li::before {
+    content: "★";
+    color: var(--accent-secondary);
+    position: absolute;
+    left: 0;
+    font-size: 1.2rem;
+    text-shadow: var(--glow-effect) var(--accent-secondary);
+}
+
+.location-info p {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    color: var(--light-text);
+    font-family: 'Bebas Neue', sans-serif;
+}
+
+.location-info p i {
+    color: var(--primary-color);
+    width: 25px;
+    text-align: center;
+    text-shadow: var(--glow-effect) var(--primary-color);
+}
+
+.map-container {
+    width: 100%;
+    height: 200px;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    margin-top: 20px;
+    border: 2px solid var(--accent-color);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+}
+
+/*--------------------------------------------------------------
+# Events Calendar - Rock Show Schedule
+--------------------------------------------------------------*/
+.month-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px 0;
+}
+
+.month-navigation button {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border: 2px solid var(--accent-color);
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--light-text);
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 1.2rem;
+    box-shadow: 0 0 15px rgba(255, 0, 128, 0.3);
+}
+
+.month-navigation button:hover {
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    text-shadow: var(--glow-effect) var(--light-text);
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+    transform: scale(1.1);
+}
+
+.month-navigation h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: var(--light-text);
+    text-shadow: var(--glow-effect) var(--primary-color);
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 2px;
+}
+
+.calendar {
+    background: linear-gradient(135deg, var(--card-bg) 0%, #000 100%);
+    border-radius: var(--border-radius);
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 2px solid var(--primary-color);
+    box-shadow: 
+        0 0 20px rgba(255, 0, 128, 0.3),
+        inset 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.calendar-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-weight: 900;
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--accent-color);
+    padding-bottom: 10px;
+}
+
+.calendar-header span {
+    color: var(--accent-color);
+    font-size: 0.9rem;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+    text-shadow: var(--glow-effect) var(--accent-color);
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    color: var(--light-text);
+    font-size: 0.95rem;
+    font-weight: 700;
+    border: 1px solid transparent;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.calendar-day:hover {
+    background: rgba(255, 0, 128, 0.2);
+    border-color: var(--primary-color);
+    text-shadow: var(--glow-effect) var(--light-text);
+}
+
+.calendar-day.has-event {
+    border: 2px solid var(--accent-color);
+    background: rgba(0, 255, 255, 0.1);
+    animation: eventPulse 2s infinite;
+}
+
+.calendar-day.has-event::after {
+    content: "●";
+    position: absolute;
+    bottom: 2px;
+    color: var(--warning-color);
+    font-size: 8px;
+    text-shadow: var(--glow-effect) var(--warning-color);
+}
+
+.calendar-day.selected {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    color: var(--light-text);
+    text-shadow: 2px 2px 0 #000;
+    box-shadow: 0 0 15px rgba(255, 0, 128, 0.5);
+}
+
+.calendar-day.inactive {
+    color: var(--muted-text);
+    opacity: 0.4;
+}
+
+.calendar-day.today {
+    background: rgba(255, 255, 0, 0.2);
+    border: 2px solid var(--accent-secondary);
+    color: var(--light-text);
+    font-weight: 900;
+    text-shadow: var(--glow-effect) var(--accent-secondary);
+}
+
+/*--------------------------------------------------------------
+# Modal & Dialog Styles - Punk Aesthetic
+--------------------------------------------------------------*/
+.day-modal, .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    backdrop-filter: blur(5px);
+}
+
+.day-modal-content, .modal-content {
+    background: linear-gradient(135deg, var(--card-bg) 0%, #000 100%);
+    padding: 25px;
+    border-radius: var(--border-radius);
+    width: 100%;
+    max-width: 400px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    border: 2px solid var(--primary-color);
+    box-shadow: 
+        0 0 30px rgba(255, 0, 128, 0.5),
+        inset 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.close-day-modal, .close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: var(--muted-text);
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    transition: var(--transition);
+    font-weight: 900;
+}
+
+.close-day-modal:hover, .close-modal:hover {
+    color: var(--warning-color);
+    text-shadow: var(--glow-effect) var(--warning-color);
+    transform: scale(1.2);
+}
+
+.day-title {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 2px;
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--accent-color);
+    color: var(--light-text);
+    text-shadow: var(--glow-effect) var(--primary-color);
+}
+
+.event-item {
+    margin-bottom: 20px;
+    border-left: 4px solid var(--accent-color);
+    padding: 15px;
+    background: rgba(0, 255, 255, 0.1);
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.event-item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
+    animation: scanline 3s infinite;
+}
+
+.event-item:hover {
+    background: rgba(0, 255, 255, 0.2);
+    transform: translateX(8px);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+}
+
+.event-item h4 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    color: var(--light-text);
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+}
+
+.event-time {
+    font-size: 0.9rem;
+    color: var(--accent-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 0;
+    font-weight: 700;
+    text-shadow: var(--glow-effect) var(--accent-secondary);
+    font-family: 'Bebas Neue', sans-serif;
+}
+
+.event-desc {
+    font-size: 0.9rem;
+    color: var(--muted-text);
+    line-height: 1.4;
+    text-transform: none;
+}
+
+.no-events {
+    text-align: center;
+    padding: 30px 20px;
+    color: var(--muted-text);
+    font-style: italic;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: var(--border-radius);
+    border: 2px dashed var(--primary-color);
+}
+
+/*--------------------------------------------------------------
+# Footer - Underground Contacts
+--------------------------------------------------------------*/
+footer {
+    background: linear-gradient(180deg, var(--darker-bg) 0%, #000 100%);
+    padding: 30px 20px;
+    text-align: center;
+    margin-bottom: 75px;
+    position: relative;
+    border-top: 2px solid var(--primary-color);
+    box-shadow: 0 0 20px rgba(255, 0, 128, 0.3);
+}
+
+footer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--primary-color));
+    animation: scanline 4s infinite;
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.contact-info p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--light-text);
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+}
+
+.contact-info p i {
+    color: var(--primary-color);
+    text-shadow: var(--glow-effect) var(--primary-color);
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.social-links a {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    transition: var(--transition);
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 0, 128, 0.1);
+    border: 2px solid var(--primary-color);
+}
+
+.social-links a:hover {
+    color: var(--accent-color);
+    background: rgba(0, 255, 255, 0.2);
+    border-color: var(--accent-color);
+    transform: translateY(-5px) rotate(5deg);
+    box-shadow: 
+        0 0 20px rgba(0, 255, 255, 0.4),
+        0 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+.copyright {
+    color: var(--muted-text);
+    font-size: 0.8rem;
+    margin-top: 15px;
+    opacity: 0.7;
+    text-transform: none;
+}
+
+/*--------------------------------------------------------------
+# Loading Spinner - Glitch Style
+--------------------------------------------------------------*/
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 120px;
+    color: var(--muted-text);
+    font-style: italic;
+    position: relative;
+    padding-left: 30px;
+    font-family: 'Bebas Neue', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.loading-spinner::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    border: 3px solid var(--primary-color);
+    border-bottom-color: var(--accent-color);
+    border-radius: 50%;
+    animation: glitchSpin 1s linear infinite;
+    box-shadow: 0 0 10px rgba(255, 0, 128, 0.5);
+}
+
+/*--------------------------------------------------------------
+# Animation Keyframes - Punk Effects
+--------------------------------------------------------------*/
+@keyframes glitchIn {
+    0% { 
+        opacity: 0; 
+        transform: translateX(-10px) scale(0.98);
+        filter: hue-rotate(90deg);
+    }
+    50% {
+        filter: hue-rotate(0deg);
+    }
+    100% { 
+        opacity: 1; 
+        transform: translateX(0) scale(1);
+        filter: hue-rotate(0deg);
+    }
+}
+
+@keyframes neonPulse {
+    0% { 
+        filter: drop-shadow(0 0 5px var(--primary-color)) drop-shadow(0 0 10px var(--primary-color));
+    }
+    100% { 
+        filter: drop-shadow(0 0 10px var(--primary-color)) drop-shadow(0 0 20px var(--primary-color)) drop-shadow(0 0 30px var(--primary-color));
+    }
+}
+
+@keyframes textGlow {
+    0% { 
+        text-shadow: 2px 2px 0 #000, 0 0 10px var(--primary-color);
+    }
+    100% { 
+        text-shadow: 2px 2px 0 #000, 0 0 20px var(--primary-color), 0 0 30px var(--primary-color), 0 0 40px var(--primary-color);
+    }
+}
+
+@keyframes scanline {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+@keyframes eventPulse {
+    0%, 100% { 
+        box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+    }
+    50% { 
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+    }
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.3; }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+@keyframes glitchSpin {
+    0% { 
+        transform: rotate(0deg); 
+        border-color: var(--primary-color) var(--accent-color) var(--primary-color) var(--accent-color);
+    }
+    25% { 
+        border-color: var(--accent-color) var(--primary-color) var(--accent-color) var(--primary-color);
+    }
+    50% { 
+        transform: rotate(180deg); 
+        border-color: var(--primary-color) var(--accent-color) var(--primary-color) var(--accent-color);
+    }
+    75% { 
+        border-color: var(--accent-color) var(--primary-color) var(--accent-color) var(--primary-color);
+    }
+    100% { 
+        transform: rotate(360deg); 
+        border-color: var(--primary-color) var(--accent-color) var(--primary-color) var(--accent-color);
+    }
+}
+
+/*--------------------------------------------------------------
+# Focus States - Accessibility with Style
+--------------------------------------------------------------*/
+:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.btn:focus, 
+.tab-btn:focus, 
+.main-nav a:focus {
+    outline-color: var(--accent-color);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+}
+
+.btn:focus:not(:focus-visible), 
+.tab-btn:focus:not(:focus-visible), 
+.main-nav a:focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: none;
+}
+
+.btn:focus-visible, 
+.tab-btn:focus-visible, 
+.main-nav a:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+}
+
+/*--------------------------------------------------------------
+# iOS and Device Fixes
+--------------------------------------------------------------*/
+html, body {
+    height: 100%;
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+@supports (-webkit-touch-callout: none) {
+    .app-container {
+        min-height: -webkit-fill-available;
+    }
+    
+    .modal, .day-modal {
+        height: -webkit-fill-available;
+    }
+}
+
+@media screen and (max-height: 450px) {
+    .main-nav {
+        position: absolute;
+    }
+}
+
+input, textarea, select, button {
+    font-family: 'Bebas Neue', sans-serif;
+}
+
+/*--------------------------------------------------------------
+# Responsive Design - Mobile First
+--------------------------------------------------------------*/
+@media (min-width: 768px) {
+    main {
+        padding: 25px;
+    }
+    
+    .hero {
+        height: 280px;
+    }
+    
+    .hero h2 {
+        font-size: 3.2rem;
+    }
+    
+    .menu-item:hover {
+        transform: translateX(8px);
+    }
+    
+    .modal-content, 
+    .day-modal-content {
+        max-width: 500px;
+    }
+    
+    .burger-spotlight .burger-image,
+    .current-burger img {
+        max-width: 400px;
+        height: 240px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .quick-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+    }
+    
+    .info-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+    }
+}
+
+/*--------------------------------------------------------------
+# Accessibility & Preferences
+--------------------------------------------------------------*/
+@media (prefers-contrast: high) {
+    :root {
+        --primary-color: #ff0099;
+        --accent-color: #00ffff;
+        --light-text: #ffffff;
+        --muted-text: #cccccc;
+        --dark-bg: #000000;
+        --card-bg: #111111;
+    }
+    
+    .ingredients li,
+    .menu-item p {
+        color: #dddddd;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .btn:hover, 
+    .btn:focus, 
+    .menu-item:hover, 
+    .event-item:hover, 
+    .social-links a:hover, 
+    .burger-preview:hover img,
+    .month-navigation button:hover {
+        transform: none;
+        transition: none;
+    }
+    
+    .btn::before,
+    .tab-btn::before {
+        display: none;
+    }
+    
+    @keyframes glitchSpin {
+        0%, 100% { opacity: 0.7; }
+        50% { opacity: 1; }
+    }
+    
+    @keyframes neonPulse,
+    @keyframes textGlow,
+    @keyframes scanline,
+    @keyframes eventPulse,
+    @keyframes blink,
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+    }
+    
+    html {
+        scroll-behavior: auto;
+    }
+    
+    .logo img {
+        animation: none;
+    }
+    
+    .calendar-day.has-event,
+    .happy-hour {
+        animation: none;
+    }
+}
+
+/*--------------------------------------------------------------
+# Print Styles
+--------------------------------------------------------------*/
+@media print {
+    body {
+        background: white;
+        color: black;
+        font-family: Arial, sans-serif;
+    }
+    
+    .app-container {
+        padding: 0;
+    }
+    
+    .top-header, 
+    .main-nav, 
+    footer,
+    .btn {
+        display: none;
+    }
+    
+    main {
+        padding: 0;
+    }
+    
+    .info-card, 
+    .menu-item {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        border: 1px solid #000;
+        color: black;
+        background: white;
+        box-shadow: none;
+    }
+    
+    h2, h3, h4 {
+        color: black;
+        text-shadow: none;
+    }
+    
+    .hero {
+        background: #f0f0f0;
+        color: black;
+    }
+}
+
+/*--------------------------------------------------------------
+# Backend Integration & Error States
+--------------------------------------------------------------*/
+.error-message {
+    text-align: center;
+    padding: 25px;
+    color: var(--warning-color);
+    background: rgba(255, 68, 68, 0.1);
+    border: 2px solid var(--warning-color);
+    border-radius: var(--border-radius);
+    margin: 20px 0;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+    box-shadow: 0 0 15px rgba(255, 68, 68, 0.3);
+}
+
+.no-items, .no-special {
+    text-align: center;
+    padding: 30px;
+    color: var(--muted-text);
+    font-style: italic;
+    opacity: 0.8;
+    background: rgba(0, 0, 0, 0.2);
+    border: 2px dashed var(--muted-text);
+    border-radius: var(--border-radius);
+}
+
+/*--------------------------------------------------------------
+# Enhanced Menu Item Images
+--------------------------------------------------------------*/
+.menu-item-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+    margin-bottom: 15px;
+    border: 2px solid var(--accent-color);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+    transition: var(--transition);
+}
+
+.menu-item:hover .menu-item-image {
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+    transform: scale(1.02);
+}
+
+/*--------------------------------------------------------------
+# Special Effects & Glitch Elements
+--------------------------------------------------------------*/
+.glitch-text {
+    position: relative;
+    color: var(--light-text);
+    font-size: 2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    animation: glitch 2s infinite;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.glitch-text::before {
+    animation: glitch-1 0.5s infinite;
+    color: var(--primary-color);
+    z-index: -1;
+}
+
+.glitch-text::after {
+    animation: glitch-2 0.5s infinite;
+    color: var(--accent-color);
+    z-index: -2;
+}
+
+@keyframes glitch {
+    0%, 74%, 76%, 100% {
+        transform: translate(0);
+    }
+    75% {
+        transform: translate(-2px, 2px);
+    }
+}
+
+@keyframes glitch-1 {
+    0%, 74%, 76%, 100% {
+        transform: translate(0);
+    }
+    75% {
+        transform: translate(2px, -2px);
+    }
+}
+
+@keyframes glitch-2 {
+    0%, 74%, 76%, 100% {
+        transform: translate(0);
+    }
+    75% {
+        transform: translate(-2px, -2px);
+    }
+}
+
+/* End of Star Bar Rocks inspired stylesheet */
+
+
+
