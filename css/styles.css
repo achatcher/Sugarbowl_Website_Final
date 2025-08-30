@@ -1334,6 +1334,90 @@ footer::before {
 }
 
 /*--------------------------------------------------------------
+# Enhanced Happy Hour Section
+--------------------------------------------------------------*/
+.happy-hour {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--blue-text);
+    text-align: center;
+    padding: 10px;
+    background-color: rgba(43, 77, 168, 0.1);
+    border-radius: var(--border-radius);
+    margin-bottom: 15px;
+}
+
+.happy-hour-schedule {
+    font-size: 0.9rem;
+    color: var(--muted-text);
+    margin-bottom: 15px;
+    text-align: center;
+    font-style: italic;
+}
+
+.todays-specials {
+    background-color: rgba(139, 0, 0, 0.1);
+    border: 1px solid var(--accent-color);
+    border-radius: var(--border-radius);
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.todays-specials h4 {
+    color: var(--blue-text);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    text-align: center;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.specials-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.specials-list li {
+    padding: 4px 0;
+    position: relative;
+    padding-left: 15px;
+    font-size: 0.9rem;
+    color: var(--light-text);
+    line-height: 1.4;
+}
+
+.specials-list li::before {
+    content: "→";
+    color: var(--accent-color);
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+.closed-notice {
+    text-align: center;
+    color: var(--muted-text);
+    font-style: italic;
+    padding: 20px 10px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: var(--border-radius);
+    border: 1px dashed var(--muted-text);
+}
+
+.day-indicator {
+    display: inline-block;
+    background: var(--primary-color);
+    color: var(--light-text);
+    padding: 2px 8px;
+    border-radius: var(--border-radius);
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+/*--------------------------------------------------------------
 # Enhanced Desktop Layout
 --------------------------------------------------------------*/
 @media (min-width: 768px) {
@@ -1542,5 +1626,155 @@ footer::before {
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
 }
 
+/*--------------------------------------------------------------
+# Upcoming Events - Enhanced Layout
+--------------------------------------------------------------*/
+.upcoming-event {
+    display: flex;
+    gap: 15px;
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(75, 108, 196, 0.2);
+    position: relative;
+}
+
+.upcoming-event:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.upcoming-event.primary-event {
+    padding: 20px 0;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.upcoming-event.secondary-event {
+    padding: 12px 0;
+    opacity: 0.9;
+}
+
+.event-date-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 70px;
+    padding: 8px;
+    background: var(--primary-color);
+    border-radius: var(--border-radius);
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.date-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--light-text);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1;
+}
+
+.date-full {
+    font-size: 0.75rem;
+    color: var(--light-text);
+    opacity: 0.9;
+    margin-top: 2px;
+    line-height: 1;
+}
+
+.event-content {
+    flex: 1;
+}
+
+.event-content h4 {
+    font-size: 1.1rem;
+    margin-bottom: 6px;
+    color: var(--light-text);
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+}
+
+.primary-event .event-content h4 {
+    font-size: 1.3rem;
+    color: var(--light-text);
+}
+
+.event-content .event-time {
+    color: var(--primary-light);
+    font-weight: 600;
+    margin: 8px 0;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.event-content p {
+    font-size: 0.85rem;
+    color: var(--muted-text);
+    line-height: 1.4;
+    margin-bottom: 0;
+}
+
+.primary-event .event-content p {
+    font-size: 0.9rem;
+}
+
+.no-upcoming-events {
+    text-align: center;
+    padding: 30px 15px;
+    color: var(--muted-text);
+    font-style: italic;
+}
+
+.no-upcoming-events p {
+    margin-bottom: 20px;
+    font-size: 1rem;
+}
+
+/* Special styling for "Today" events */
+.upcoming-event.primary-event .event-date-badge {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    animation: subtle-glow 3s infinite alternate ease-in-out;
+}
+
+@keyframes subtle-glow {
+    0% { 
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    100% { 
+        box-shadow: 0 2px 8px rgba(43, 77, 168, 0.4);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .upcoming-event {
+        gap: 10px;
+    }
+    
+    .event-date-badge {
+        min-width: 60px;
+        padding: 6px;
+    }
+    
+    .date-label {
+        font-size: 0.8rem;
+    }
+    
+    .date-full {
+        font-size: 0.7rem;
+    }
+    
+    .event-content h4 {
+        font-size: 1rem;
+    }
+    
+    .primary-event .event-content h4 {
+        font-size: 1.2rem;
+    }
+}
 
 /* End of complete SugarBowl grunge stylesheet */
