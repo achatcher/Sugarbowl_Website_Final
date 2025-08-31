@@ -3,9 +3,9 @@
  * 
  * Provides an interactive event calendar with modal event details.
  * Features include month navigation, event highlighting, Google Calendar integration,
- * and responsive calendar display with today's event preview.
+ * recurring weekly events, and responsive calendar display with upcoming events preview.
  * 
- * @version 1.1.0
+ * @version 2.0.0
  */
 
 (function() {
@@ -13,19 +13,54 @@
 
     // Configuration
     const CONFIG = {
-        googleCalendarId: 'primary', // Replace with client's calendar ID or use 'primary'
-        apiKey: 'YOUR_API_KEY', // Replace with your actual Google API key
-        maxResults: 100, // Maximum number of events to fetch
-        syncEnabled: false, // Set to true when API key and permissions are configured
-        useLocalEvents: true, // Use local events while developing
+        googleCalendarId: 'YOUR_CALENDAR_ID_HERE', // Replace with your actual calendar ID
+        apiKey: 'YOUR_API_KEY_HERE', // Replace with your actual API key
+        maxResults: 100,
+        syncEnabled: true, // Set to true to enable Google Calendar
+        useLocalEvents: true, // Keep true to use recurring events as fallback
         cacheExpiration: 1800, // Cache expiration time in seconds (30 minutes)
-        debugMode: false // Set to true for console logging
+        debugMode: true // Set to true for console logging
+    };
+
+    // Recurring Events Configuration - These always happen
+    const RECURRING_EVENTS = {
+        // Day of week: 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday
+        3: [ // Wednesday
+            {
+                title: 'Bingo Night',
+                time: '7:00 PM - 9:00 PM',
+                description: 'Weekly bingo night with prizes and drink specials! Come test your luck.',
+                image: 'img/events/bingo.jpg',
+                recurring: true,
+                category: 'weekly'
+            }
+        ],
+        4: [ // Thursday
+            {
+                title: 'Pool Tournament',
+                time: '6:30 PM - 10:00 PM',
+                description: 'Weekly pool tournament! Sign up starts at 6:00 PM. Winner takes the pot!',
+                image: 'img/events/pool.jpg',
+                recurring: true,
+                category: 'weekly'
+            }
+        ],
+        5: [ // Friday
+            {
+                title: 'Karaoke Night',
+                time: '8:00 PM - 1:00 AM',
+                description: 'Sing your heart out at our legendary karaoke night! Over 10,000 songs to choose from.',
+                image: 'img/events/karaoke.jpg',
+                recurring: true,
+                category: 'weekly'
+            }
+        ]
     };
 
     // Store references to DOM elements
     let calendarEl, currentMonthEl, prevMonthBtn, nextMonthBtn;
     let dayModal, dayModalTitle, dayModalEvents;
-    
+
     // Calendar state
     const today = new Date();
     let currentMonth = today.getMonth();
@@ -35,141 +70,16 @@
     let isLoading = false;
     let eventsCache = {};
     let lastFetched = null;
-    
+
     // Cache date formatting
     const monthNames = ["January", "February", "March", "April", "May", "June", 
                          "July", "August", "September", "October", "November", "December"];
     const dayOfWeekNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const dayOfWeekShort = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-    
-    // Local event data as fallback and for development
-    const localEvents = {
-        // Format: 'YYYY-MM-DD': [{event objects}]
-        '2025-06-04': [
-            {
-                title: 'Bingo Night',
-                time: '7:00 PM - 10:00 PM',
-                description: 'Weekly bingo night with prizes and special drinks menu.',
-                image: 'img/events/bingo.jpg'
-            }
-        ],
-        '2025-06-05': [
-            {
-                title: 'Karaoke Night',
-                time: '8:00 PM - 12:00 AM',
-                description: 'Sing your heart out at our weekly karaoke night! Over 10,000 songs to choose from.',
-                image: 'img/events/karaoke.jpg'
-            }
-        ],
-        '2025-06-07': [
-            {
-                title: 'Live Band: The Rockers',
-                time: '9:00 PM - 1:00 AM',
-                description: 'The Rockers are bringing their unique blend of classic rock and modern hits to SugarBowl.',
-                image: 'img/events/band1.jpg'
-            }
-        ],
-        '2025-06-11': [
-            {
-                title: 'Bingo Night',
-                time: '7:00 PM - 10:00 PM',
-                description: 'Weekly bingo night with prizes and special drinks menu.',
-                image: 'img/events/bingo.jpg'
-            }
-        ],
-        '2025-06-12': [
-            {
-                title: 'Karaoke Night',
-                time: '8:00 PM - 12:00 AM',
-                description: 'Sing your heart out at our weekly karaoke night! Over 10,000 songs to choose from.',
-                image: 'img/events/karaoke.jpg'
-            }
-        ],
-        '2025-06-14': [
-            {
-                title: 'Live Band: Jazz Ensemble',
-                time: '8:00 PM - 11:00 PM',
-                description: 'Enjoy a sophisticated evening of jazz standards and improvisation.',
-                image: 'img/events/band2.jpg'
-            }
-        ],
-        '2025-06-18': [
-            {
-                title: 'Bingo Night',
-                time: '7:00 PM - 10:00 PM',
-                description: 'Weekly bingo night with prizes and special drinks menu.',
-                image: 'img/events/bingo.jpg'
-            }
-        ],
-        '2025-06-19': [
-            {
-                title: 'Karaoke Night',
-                time: '8:00 PM - 12:00 AM',
-                description: 'Sing your heart out at our weekly karaoke night! Over 10,000 songs to choose from.',
-                image: 'img/events/karaoke.jpg'
-            }
-        ],
-        '2025-06-21': [
-            {
-                title: 'Live Band: Electronic Vibes',
-                time: '9:00 PM - 1:00 AM',
-                description: 'Dance the night away with the best electronic music in town.',
-                image: 'img/events/band3.jpg'
-            }
-        ],
-        '2025-06-25': [
-            {
-                title: 'Bingo Night',
-                time: '7:00 PM - 10:00 PM',
-                description: 'Weekly bingo night with prizes and special drinks menu.',
-                image: 'img/events/bingo.jpg'
-            }
-        ],
-        '2025-06-26': [
-            {
-                title: 'Karaoke Night',
-                time: '8:00 PM - 12:00 AM',
-                description: 'Sing your heart out at our weekly karaoke night! Over 10,000 songs to choose from.',
-                image: 'img/events/karaoke.jpg'
-            }
-        ],
-        '2025-06-28': [
-            {
-                title: 'Live Band: Country Roads',
-                time: '8:00 PM - 12:00 AM',
-                description: 'Get ready for some boot-stomping country music that will get everyone on the dance floor.',
-                image: 'img/events/band4.jpg'
-            }
-        ],
-        '2025-06-30': [
-            {
-                title: 'Special Event: Summer Kickoff Party',
-                time: '6:00 PM - 2:00 AM',
-                description: 'Celebrate the start of summer with special menu items, drink promotions, and live DJs all night!',
-                image: 'img/events/summer.jpg'
-            }
-        ],
-        '2025-07-02': [
-            {
-                title: 'Bingo Night',
-                time: '7:00 PM - 10:00 PM',
-                description: 'Weekly bingo night with prizes and special drinks menu.',
-                image: 'img/events/bingo.jpg'
-            }
-        ],
-        '2025-07-03': [
-            {
-                title: 'Karaoke Night',
-                time: '8:00 PM - 12:00 AM',
-                description: 'Sing your heart out at our weekly karaoke night! Over 10,000 songs to choose from.',
-                image: 'img/events/karaoke.jpg'
-            }
-        ]
-    };
-    
-    // Current working events data (will be populated from Google Calendar or local events)
+
+    // Current working events data (will be populated from Google Calendar and recurring events)
     let events = {};
-    
+
     /**
      * Initialize the calendar module
      */
@@ -193,23 +103,105 @@
             setupExistingModal();
         }
         
+        // Always generate recurring events first
+        generateRecurringEvents();
+        
         // Load events from Google Calendar if enabled
         if (CONFIG.syncEnabled) {
             loadGoogleApi();
         } else {
-            // Use local events
-            if (CONFIG.useLocalEvents) {
-                events = JSON.parse(JSON.stringify(localEvents)); // Clone local events
-                renderCalendar();
-                updateTodayEvent();
+            // Just render with recurring events
+            renderCalendar();
+            updateUpcomingEvents();
+        }
+    }
+
+    /**
+     * Generate recurring events for the current view period
+     */
+    function generateRecurringEvents() {
+        debugLog('Generating recurring events');
+        
+        // Generate recurring events for 6 months (3 before, 3 after current month)
+        const startDate = new Date(currentYear, currentMonth - 3, 1);
+        const endDate = new Date(currentYear, currentMonth + 4, 0);
+        
+        const currentDate = new Date(startDate);
+        
+        while (currentDate <= endDate) {
+            const dayOfWeek = currentDate.getDay();
+            const dateString = formatDateString(currentDate);
+            
+            // Check if this day has recurring events
+            if (RECURRING_EVENTS[dayOfWeek]) {
+                if (!events[dateString]) {
+                    events[dateString] = [];
+                }
+                
+                // Add recurring events for this day (avoid duplicates)
+                RECURRING_EVENTS[dayOfWeek].forEach(recurringEvent => {
+                    const exists = events[dateString].some(event => 
+                        event.title === recurringEvent.title && event.recurring
+                    );
+                    
+                    if (!exists) {
+                        events[dateString].push({
+                            ...recurringEvent,
+                            id: `recurring-${dayOfWeek}-${recurringEvent.title.toLowerCase().replace(/\s+/g, '-')}`,
+                            date: dateString
+                        });
+                    }
+                });
             }
+            
+            // Move to next day
+            currentDate.setDate(currentDate.getDate() + 1);
         }
         
-        // Render the calendar with whatever data we have
-        renderCalendar();
-        updateTodayEvent();
+        debugLog(`Generated recurring events through ${endDate.toDateString()}`);
     }
-    
+
+    /**
+     * Merge Google Calendar events with recurring events
+     * @param {Object} googleEvents - Events from Google Calendar
+     */
+    function mergeEventsWithRecurring(googleEvents) {
+        debugLog('Merging Google Calendar events with recurring events');
+        
+        // Start with recurring events
+        const mergedEvents = { ...events };
+        
+        // Add Google Calendar events
+        Object.keys(googleEvents).forEach(dateString => {
+            if (!mergedEvents[dateString]) {
+                mergedEvents[dateString] = [];
+            }
+            
+            // Add Google events to the date
+            googleEvents[dateString].forEach(googleEvent => {
+                mergedEvents[dateString].push(googleEvent);
+            });
+        });
+        
+        // Sort events within each day by time
+        Object.keys(mergedEvents).forEach(dateString => {
+            mergedEvents[dateString].sort((a, b) => {
+                // Recurring events typically go first, then Google events
+                if (a.recurring && !b.recurring) return -1;
+                if (!a.recurring && b.recurring) return 1;
+                
+                // Sort by start time if both are Google events
+                if (a.start && b.start) {
+                    return a.start - b.start;
+                }
+                
+                return 0;
+            });
+        });
+        
+        return mergedEvents;
+    }
+
     /**
      * Load Google API and initialize the client
      */
@@ -221,9 +213,9 @@
         const cachedEvents = getCachedEvents();
         if (cachedEvents) {
             debugLog('Using cached events');
-            events = cachedEvents;
+            events = mergeEventsWithRecurring(cachedEvents);
             renderCalendar();
-            updateTodayEvent();
+            updateUpcomingEvents();
             showLoading(false);
             return;
         }
@@ -235,7 +227,7 @@
         script.onerror = handleApiLoadError;
         document.body.appendChild(script);
     }
-    
+
     /**
      * Initialize the Google API client
      */
@@ -251,7 +243,7 @@
             }).catch(handleApiError);
         });
     }
-    
+
     /**
      * Fetch events from Google Calendar
      */
@@ -271,7 +263,7 @@
             orderBy: 'startTime'
         }).then(processCalendarEvents).catch(handleApiError);
     }
-    
+
     /**
      * Process the calendar events from Google Calendar
      * @param {Object} response - The response from Google Calendar API
@@ -281,7 +273,7 @@
         const items = response.result.items;
         
         // Convert Google Calendar events to our format
-        events = {};
+        const googleEvents = {};
         
         items.forEach(event => {
             // Get start and end times
@@ -308,37 +300,69 @@
                 timeStr = `${formatTime(start)} - ${formatTime(end)}`;
             }
             
+            // Extract image URL from description if present
+            const imageUrl = extractImageUrl(event.description);
+            const cleanDescription = extractDescription(event.description);
+            
             // Create event object
             const eventObj = {
                 id: event.id,
                 title: event.summary || 'Untitled Event',
                 time: timeStr,
-                description: event.description || 'No description available.',
-                image: 'img/events/default.jpg', // Default image
+                description: cleanDescription || 'No description available.',
+                image: imageUrl || 'img/events/default.jpg',
                 location: event.location || '',
                 link: event.htmlLink || '',
                 isAllDay: isAllDay,
                 start: start,
                 end: end,
-                originalEvent: event // Store the original event for reference
+                recurring: false, // Google Calendar events are not our recurring events
+                originalEvent: event
             };
             
-            // Add to events object, creating array if needed
-            if (!events[dateStr]) {
-                events[dateStr] = [];
+            // Add to Google events object
+            if (!googleEvents[dateStr]) {
+                googleEvents[dateStr] = [];
             }
-            events[dateStr].push(eventObj);
+            googleEvents[dateStr].push(eventObj);
         });
         
-        // Cache the events
-        cacheEvents(events);
+        // Merge with recurring events
+        events = mergeEventsWithRecurring(googleEvents);
+        
+        // Cache the Google events only (not the merged ones)
+        cacheEvents(googleEvents);
         
         // Update the UI
         renderCalendar();
-        updateTodayEvent();
+        updateUpcomingEvents();
         showLoading(false);
     }
-    
+
+    /**
+     * Extract image URL from event description
+     * @param {String} description - Event description
+     * @returns {String|null} Image URL or null
+     */
+    function extractImageUrl(description) {
+        if (!description) return null;
+        
+        const imageMatch = description.match(/IMAGE:\s*(https?:\/\/[^\s]+)/i);
+        return imageMatch ? imageMatch[1] : null;
+    }
+
+    /**
+     * Extract description without image URL
+     * @param {String} description - Event description
+     * @returns {String} Clean description
+     */
+    function extractDescription(description) {
+        if (!description) return '';
+        
+        // Remove the IMAGE: line from description
+        return description.replace(/IMAGE:\s*https?:\/\/[^\s]+/gi, '').trim();
+    }
+
     /**
      * Cache events in localStorage
      * @param {Object} eventsData - The events data to cache
@@ -355,7 +379,7 @@
             debugLog('Failed to cache events: ' + e.message, 'warn');
         }
     }
-    
+
     /**
      * Get cached events if they're still valid
      * @returns {Object|null} Cached events or null if invalid/expired
@@ -380,7 +404,7 @@
             return null;
         }
     }
-    
+
     /**
      * Format time from Date object to readable string (12-hour format)
      * @param {Date} date - The date object
@@ -396,7 +420,7 @@
         
         return `${hours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
     }
-    
+
     /**
      * Handle API load error
      */
@@ -404,14 +428,11 @@
         debugLog('Failed to load Google API', 'error');
         showLoading(false);
         
-        // Fall back to local events
-        if (CONFIG.useLocalEvents) {
-            events = JSON.parse(JSON.stringify(localEvents)); // Clone local events
-            renderCalendar();
-            updateTodayEvent();
-        }
+        // Continue with just recurring events
+        renderCalendar();
+        updateUpcomingEvents();
     }
-    
+
     /**
      * Handle API errors
      * @param {Object} error - The error object
@@ -420,14 +441,11 @@
         debugLog('Google API error: ' + JSON.stringify(error), 'error');
         showLoading(false);
         
-        // Fall back to local events
-        if (CONFIG.useLocalEvents) {
-            events = JSON.parse(JSON.stringify(localEvents)); // Clone local events
-            renderCalendar();
-            updateTodayEvent();
-        }
+        // Continue with just recurring events
+        renderCalendar();
+        updateUpcomingEvents();
     }
-    
+
     /**
      * Show or hide loading state
      * @param {Boolean} show - Whether to show or hide loading state
@@ -438,18 +456,16 @@
         if (calendarEl) {
             if (show) {
                 calendarEl.innerHTML = '<div class="loading-spinner">Loading events...</div>';
-            } else {
-                // Calendar will be rendered after loading completes
             }
         }
         
-        // Also update today's event display if showing loading state
+        // Also update upcoming events display if showing loading state
         const todayEvent = document.getElementById('today-event');
         if (todayEvent && show) {
-            todayEvent.innerHTML = '<div class="loading-spinner">Loading today\'s events...</div>';
+            todayEvent.innerHTML = '<div class="loading-spinner">Loading upcoming events...</div>';
         }
     }
-    
+
     /**
      * Set up event listeners for calendar navigation
      */
@@ -512,7 +528,7 @@
             }
         });
     }
-    
+
     /**
      * Navigate to previous month
      */
@@ -524,6 +540,9 @@
             currentMonth = 11;
             currentYear--;
         }
+        
+        // Regenerate recurring events for new view period
+        generateRecurringEvents();
         renderCalendar();
         
         // Fetch new events if using Google Calendar and we're viewing a month outside our cached range
@@ -531,7 +550,7 @@
             fetchGoogleCalendarEvents();
         }
     }
-    
+
     /**
      * Navigate to next month
      */
@@ -543,6 +562,9 @@
             currentMonth = 0;
             currentYear++;
         }
+        
+        // Regenerate recurring events for new view period
+        generateRecurringEvents();
         renderCalendar();
         
         // Fetch new events if using Google Calendar and we're viewing a month outside our cached range
@@ -550,7 +572,7 @@
             fetchGoogleCalendarEvents();
         }
     }
-    
+
     /**
      * Check if we should refresh events data
      * @returns {Boolean} True if we should refresh events
@@ -565,7 +587,7 @@
         
         return false;
     }
-    
+
     /**
      * Use existing modal in the DOM
      */
@@ -587,7 +609,7 @@
             }
         });
     }
-    
+
     /**
      * Create the day modal dynamically
      */
@@ -629,7 +651,7 @@
         // Mark as created
         modalCreated = true;
     }
-    
+
     /**
      * Close the modal
      */
@@ -643,7 +665,7 @@
             selectedDay.focus();
         }
     }
-    
+
     /**
      * Render the calendar with current month/year
      */
@@ -719,6 +741,12 @@
             // Check if this day has events
             if (events[dateString]) {
                 dayCell.classList.add('has-event');
+                
+                // Add visual indicator for recurring events
+                const hasRecurring = events[dateString].some(event => event.recurring);
+                if (hasRecurring) {
+                    dayCell.classList.add('has-recurring');
+                }
             }
             
             // Highlight today
@@ -753,7 +781,7 @@
             }
         }, 100);
     }
-    
+
     /**
      * Handle keyboard navigation for day cells
      * @param {Event} e - The keyboard event
@@ -816,7 +844,7 @@
                 break;
         }
     }
-    
+
     /**
      * Move focus to a specific date, changing month if needed
      * @param {Date} date - The date to focus on
@@ -826,6 +854,7 @@
         if (date.getMonth() !== currentMonth || date.getFullYear() !== currentYear) {
             currentMonth = date.getMonth();
             currentYear = date.getFullYear();
+            generateRecurringEvents();
             renderCalendar();
             
             // After render, focus on the specific date
@@ -851,7 +880,7 @@
             }
         }
     }
-    
+
     /**
      * Show the modal for a specific day
      * @param {String} dateString - The date string in format YYYY-MM-DD
@@ -885,7 +914,7 @@
         // Clear previous events
         dayModalEvents.innerHTML = '';
         
-        // Check if there are events for this date
+         // Check if there are events for this date
         if (events[dateString] && events[dateString].length > 0) {
             const eventList = document.createElement('div');
             eventList.className = 'event-list';
@@ -898,9 +927,12 @@
                 eventItem.setAttribute('role', 'button');
                 eventItem.setAttribute('aria-label', `${event.title}, ${event.time}`);
                 
+                // Create recurring badge if applicable
+                const recurringBadge = event.recurring ? '<span class="recurring-badge">Weekly</span>' : '';
+                
                 // Create event content with icon and proper structure
                 eventItem.innerHTML = `
-                    <h4>${event.title}</h4>
+                    <h4>${event.title} ${recurringBadge}</h4>
                     <div class="event-time">
                         <i class="far fa-clock" aria-hidden="true"></i>
                         <span>${event.time}</span>
@@ -948,7 +980,7 @@
             }
         }, 100);
     }
-    
+
     /**
      * Show detailed view of an event
      * @param {Object} event - The event object
@@ -969,46 +1001,119 @@
             console.log('Event details:', event);
         }
     }
-    
+
     /**
-     * Update today's event on the homepage
+     * Update upcoming events on the homepage - shows next 2 events
      */
-    function updateTodayEvent() {
-        const todayEvent = document.getElementById('today-event');
-        if (!todayEvent) return;
+    function updateUpcomingEvents() {
+        const upcomingEventsContainer = document.getElementById('today-event');
+        if (!upcomingEventsContainer) return;
         
-        const todayString = formatDateString(today);
+        const upcomingEvents = getNextUpcomingEvents(2);
         
-        if (events[todayString] && events[todayString].length > 0) {
-            // Get first event or featured event if available
-            const featuredEvent = events[todayString].find(e => e.featured) || events[todayString][0];
+        if (upcomingEvents.length > 0) {
+            let eventsHTML = '';
             
-            // Format event display
-            const eventHtml = `
-                <h2>${featuredEvent.title}</h2>
-                <div class="event-time">
-                    <i class="far fa-clock" aria-hidden="true"></i> 
-                    ${featuredEvent.time}
-                </div>
-                <p>${truncateText(featuredEvent.description, 80)}</p>
-                <button class="btn view-all-events-btn">VIEW ALL EVENTS</button>
-            `;
+            upcomingEvents.forEach((eventData, index) => {
+                const isFirst = index === 0;
+                const eventDate = new Date(eventData.date);
+                const dayName = dayOfWeekNames[eventDate.getDay()];
+                const monthName = monthNames[eventDate.getMonth()];
+                const dayNumber = eventDate.getDate();
+                
+                let dateLabel = '';
+                const today = new Date();
+                const tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                
+                if (isSameDay(eventDate, today)) {
+                    dateLabel = 'Today';
+                } else if (isSameDay(eventDate, tomorrow)) {
+                    dateLabel = 'Tomorrow';
+                } else {
+                    dateLabel = `${dayName}`;
+                }
+                
+                const event = eventData.event;
+                const recurringBadge = event.recurring ? '<span class="recurring-badge">Weekly</span>' : '';
+                
+                eventsHTML += `
+                    <div class="upcoming-event ${isFirst ? 'primary-event' : 'secondary-event'}">
+                        <div class="event-date-badge">
+                            <span class="date-label">${dateLabel}</span>
+                            <span class="date-full">${monthName} ${dayNumber}</span>
+                        </div>
+                        <div class="event-content">
+                            <h4>${event.title} ${recurringBadge}</h4>
+                            <div class="event-time">
+                                <i class="far fa-clock" aria-hidden="true"></i> 
+                                ${event.time}
+                            </div>
+                            <p>${truncateText(event.description, isFirst ? 100 : 80)}</p>
+                        </div>
+                    </div>
+                `;
+            });
             
-            // Update with proper error handling
+            eventsHTML += '<button class="btn view-all-events-btn">VIEW ALL EVENTS</button>';
+            
             try {
-                todayEvent.innerHTML = eventHtml;
+                upcomingEventsContainer.innerHTML = eventsHTML;
             } catch (e) {
-                debugLog('Error updating today\'s event: ' + e.message, 'error');
-                todayEvent.innerHTML = '<p>Error loading event information</p>';
+                debugLog('Error updating upcoming events: ' + e.message, 'error');
+                upcomingEventsContainer.innerHTML = '<p>Error loading event information</p>';
             }
         } else {
-            todayEvent.innerHTML = `
-                <p>No scheduled events today</p>
-                <button class="btn view-all-events-btn">VIEW ALL EVENTS</button>
+            upcomingEventsContainer.innerHTML = `
+                <div class="no-upcoming-events">
+                    <p>No upcoming events scheduled</p>
+                    <button class="btn view-all-events-btn">VIEW ALL EVENTS</button>
+                </div>
             `;
         }
     }
-    
+
+    /**
+     * Get the next upcoming events
+     * @param {Number} count - Number of events to return
+     * @returns {Array} Array of upcoming events with dates
+     */
+    function getNextUpcomingEvents(count = 2) {
+        const today = new Date();
+        const upcomingEvents = [];
+        
+        // Look ahead 30 days for events
+        for (let i = 0; i < 30 && upcomingEvents.length < count; i++) {
+            const checkDate = new Date(today);
+            checkDate.setDate(today.getDate() + i);
+            
+            const dateString = formatDateString(checkDate);
+            
+            if (events[dateString] && events[dateString].length > 0) {
+                // Get the first event for this date (prioritize featured, then recurring, then others)
+                const event = events[dateString].find(e => e.featured) || 
+                             events[dateString].find(e => e.recurring) || 
+                             events[dateString][0];
+                
+                upcomingEvents.push({
+                    date: dateString,
+                    event: event
+                });
+            }
+        }
+        
+        return upcomingEvents;
+    }
+
+    /**
+     * Check if two dates are the same day
+     */
+    function isSameDay(date1, date2) {
+        return date1.getFullYear() === date2.getFullYear() &&
+               date1.getMonth() === date2.getMonth() &&
+               date1.getDate() === date2.getDate();
+    }
+
     /**
      * Check if a date is today
      * @param {Number} year - The year to check
@@ -1021,7 +1126,7 @@
                month === today.getMonth() && 
                day === today.getDate();
     }
-    
+
     /**
      * Format a date as YYYY-MM-DD
      * @param {Date} date - The date object
@@ -1030,7 +1135,7 @@
     function formatDateString(date) {
         return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
     }
-    
+
     /**
      * Truncate text with ellipsis if too long
      * @param {String} text - The text to truncate
@@ -1040,7 +1145,7 @@
     function truncateText(text, maxLength) {
         return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
     }
-    
+
     /**
      * Handle image loading errors
      * @param {Element} img - The image element
@@ -1051,7 +1156,7 @@
             this.src = 'img/placeholder.jpg';
         };
     }
-    
+
     /**
      * Debug logging helper
      * @param {String} message - The message to log
@@ -1071,21 +1176,23 @@
                 console.log('[Calendar]', message);
         }
     }
-    
+
     /**
      * Force refresh of calendar data
      */
     function refreshCalendarData() {
         if (CONFIG.syncEnabled) {
             showLoading(true);
+            generateRecurringEvents();
             fetchGoogleCalendarEvents();
         } else {
-            // Just re-render with local data
+            // Just re-render with recurring data
+            generateRecurringEvents();
             renderCalendar();
-            updateTodayEvent();
+            updateUpcomingEvents();
         }
     }
-    
+
     /**
      * Set up the Google Calendar integration
      * @param {Object} options - Configuration options
@@ -1105,21 +1212,23 @@
             refresh: refreshCalendarData
         };
     }
-    
+
     // Initialize the calendar when the DOM is ready
     document.addEventListener('DOMContentLoaded', init);
-    
+
     // Export public API
     window.SugarBowlCalendar = {
         refresh: refreshCalendarData,
         goToMonth: function(month, year) {
             currentMonth = month;
             currentYear = year;
+            generateRecurringEvents();
             renderCalendar();
         },
         goToToday: function() {
             currentMonth = today.getMonth();
             currentYear = today.getFullYear();
+            generateRecurringEvents();
             renderCalendar();
             
             // Focus on today's cell
@@ -1135,6 +1244,18 @@
                 year: currentYear,
                 name: monthNames[currentMonth]
             };
+        },
+        addRecurringEvent: function(dayOfWeek, event) {
+            if (!RECURRING_EVENTS[dayOfWeek]) {
+                RECURRING_EVENTS[dayOfWeek] = [];
+            }
+            RECURRING_EVENTS[dayOfWeek].push({
+                ...event,
+                recurring: true
+            });
+            generateRecurringEvents();
+            renderCalendar();
+            updateUpcomingEvents();
         }
     };
 })();
