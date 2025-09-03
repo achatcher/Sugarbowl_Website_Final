@@ -153,14 +153,20 @@
             history.pushState({pageId: targetId}, '', newUrl);
         }
         
-        // Scroll to top when changing pages
-        window.scrollTo({
-            top: 0, 
-            behavior: CONFIG.scrollBehavior
-        });
+        // Scroll to top when changing pages (unless disabled)
+        const shouldScroll = link.getAttribute('data-scroll') !== 'false';
+        if (shouldScroll) {
+            window.scrollTo({
+                top: 0, 
+                behavior: CONFIG.scrollBehavior
+            });
+        }
         
         // Update current page tracker
         currentPage = targetId;
+        
+        // Update breadcrumb
+        updateBreadcrumb(targetId);
         
         // Update page-specific UI elements if needed
         updatePageSpecificUI(targetId);
@@ -265,11 +271,15 @@
                 targetPage.classList.add('active-page');
                 currentPage = pageId;
                 
-                // Scroll to top
-                window.scrollTo({
-                    top: 0,
-                    behavior: CONFIG.scrollBehavior
-                });
+                // Scroll to top (unless disabled by corresponding nav link)
+                const correspondingNavLink = document.querySelector(`.main-nav a[href="#${pageId}"]`);
+                const shouldScroll = !correspondingNavLink || correspondingNavLink.getAttribute('data-scroll') !== 'false';
+                if (shouldScroll) {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: CONFIG.scrollBehavior
+                    });
+                }
             } else {
                 console.error(`Target page #${pageId} not found`);
             }
@@ -382,6 +392,27 @@
             
             // Could implement reporting to a service here
         });
+    }
+    
+    /**
+     * Update breadcrumb navigation
+     * 
+     * @param {String} pageId - Current page ID
+     */
+    function updateBreadcrumb(pageId) {
+        const breadcrumbCurrent = document.getElementById('current-breadcrumb');
+        if (!breadcrumbCurrent) return;
+        
+        const pageNames = {
+            'home': 'Home',
+            'burger-special': 'Menu',
+            'events': 'Events',
+            'info': 'Info'
+        };
+        
+        const pageName = pageNames[pageId] || 'Page';
+        breadcrumbCurrent.textContent = pageName;
+        breadcrumbCurrent.setAttribute('aria-current', 'page');
     }
     
     /**

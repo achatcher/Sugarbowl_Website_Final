@@ -67,7 +67,7 @@ function renderMenuItems(category) {
         const start = new Date(startDate);
         const end = new Date(endDate);
         
-        const options = { month: 'long', day: 'numeric', year: 'numeric' };
+        const options = { month: 'long', day: 'numeric' };
         
         return `${start.toLocaleDateString('en-US', options)} - ${end.toLocaleDateString('en-US', options)}`;
     }
@@ -112,9 +112,13 @@ async function initBurgerSpecial() {
                     ${imageHtml}
                     <div class="burger-details">
                         <h4>${currentBurger.name}</h4>
-                        ${dateRange ? `<p class="burger-availability">Available: ${dateRange}</p>` : ''}
+                        ${dateRange ? `
+                            <div class="burger-availability">
+                                <div class="availability-label">Available:</div>
+                                <div class="availability-dates">${dateRange}</div>
+                            </div>
+                        ` : ''}
                         <p class="burger-description">${currentBurger.description}</p>
-                        <p class="burger-price">$${parseFloat(currentBurger.price).toFixed(2)}</p>
                     </div>
                 </div>
             `;
@@ -125,10 +129,37 @@ async function initBurgerSpecial() {
             const shortDescription = currentBurger.description.length > 80 
                 ? currentBurger.description.substring(0, 80) + '...'
                 : currentBurger.description;
+            
+            // Format the availability dates (same logic as burger-special.js)
+            let availabilityText = '';
+            if (currentBurger.startDate && currentBurger.endDate) {
+                const startDate = new Date(currentBurger.startDate);
+                const endDate = new Date(currentBurger.endDate);
+                
+                const formatDate = (date) => {
+                    return date.toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric' 
+                    });
+                };
+                
+                availabilityText = `${formatDate(startDate)} - ${formatDate(endDate)}`;
+            } else if (currentBurger.startDate) {
+                const startDate = new Date(currentBurger.startDate);
+                availabilityText = `Starting ${startDate.toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric' 
+                })}`;
+            } else {
+                availabilityText = 'Available Now';
+            }
                 
             currentBurgerEl.innerHTML = `
                 <h4>${currentBurger.name}</h4>
-                <p class="price">$${parseFloat(currentBurger.price).toFixed(2)}</p>
+                <div class="burger-availability">
+                    <div class="availability-label">Available:</div>
+                    <div class="availability-dates">${availabilityText}</div>
+                </div>
                 <p>${shortDescription}</p>
             `;
         }

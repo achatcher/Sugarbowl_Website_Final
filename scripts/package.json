@@ -1,0 +1,27 @@
+{
+  "name": "sugarbowl-image-tools",
+  "version": "1.0.0",
+  "description": "Image optimization tools for SugarBowl website",
+  "main": "convert-to-webp.js",
+  "scripts": {
+    "convert": "node convert-to-webp.js",
+    "convert-webp": "node convert-to-webp.js",
+    "optimize": "node convert-to-webp.js",
+    "help": "cat README.md"
+  },
+  "dependencies": {
+    "sharp": "^0.32.6"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "keywords": [
+    "webp",
+    "image-optimization",
+    "sharp",
+    "batch-conversion",
+    "restaurant-website"
+  ],
+  "author": "SugarBowl Website Team",
+  "license": "MIT"
+}

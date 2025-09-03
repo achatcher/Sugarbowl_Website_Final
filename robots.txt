@@ -1,0 +1,64 @@
+# Robots.txt for SugarBowl Bar & Grille
+# https://sugarbowl.com/robots.txt
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://sugarbowl.com/sitemap.xml
+
+# Allow all search engines to crawl the main content
+Allow: /index.html
+Allow: /css/
+Allow: /js/
+Allow: /img/
+Allow: /manifest.json
+
+# Disallow sensitive or unnecessary files
+Disallow: /.DS_Store
+Disallow: /.*
+Disallow: /*.log
+Disallow: /temp/
+Disallow: /tmp/
+
+# Specific bot instructions
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot  
+Allow: /
+Crawl-delay: 1
+
+User-agent: facebookexternalhit
+Allow: /
+Allow: /img/og-image.jpg
+Allow: /img/twitter-card.jpg
+
+User-agent: Twitterbot
+Allow: /
+Allow: /img/twitter-card.jpg
+Allow: /img/og-image.jpg
+
+# Block unwanted bots
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MajesticSEO
+Disallow: /
+
+# Additional instructions for local business crawling
+User-agent: *
+Allow: /#home
+Allow: /#burger-special  
+Allow: /#events
+Allow: /#info
+
+# Cache and performance hints
+# Host: sugarbowl.com

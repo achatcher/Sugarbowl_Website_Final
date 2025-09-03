@@ -88,7 +88,11 @@ class ApiService {
         `;
 
         try {
-            const result = await this.makeGraphQLRequest(query, { id: 'current' });
+            const result = await window.SugarBowlErrorHandler.retryOperation(
+                () => this.makeGraphQLRequest(query, { id: 'current' }),
+                'getCurrentBurger'
+            );
+            
             let burger = result.data.getBurger;
             
             if (burger && burger.imageKey && !burger.imageUrl) {
@@ -101,7 +105,12 @@ class ApiService {
 
             return burger;
         } catch (error) {
-            console.error('Error fetching current burger:', error);
+            if (window.SugarBowlErrorHandler) {
+                const errorInfo = window.SugarBowlErrorHandler.handleNetworkError(error, 'getCurrentBurger');
+                console.error('Error fetching current burger:', errorInfo);
+            } else {
+                console.error('Error fetching current burger:', error);
+            }
             return null;
         }
     }
@@ -137,12 +146,21 @@ class ApiService {
         }
 
         try {
-            const result = await this.makeGraphQLRequest(query, { filter: filter, limit: 100 });
+            const result = await window.SugarBowlErrorHandler.retryOperation(
+                () => this.makeGraphQLRequest(query, { filter: filter, limit: 100 }),
+                'getMenuItems'
+            );
+            
             const items = result.data.listMenuItems.items || [];
             this.cache.set(cacheKey, { data: items, timestamp: Date.now() });
             return items;
         } catch (error) {
-            console.error('Error fetching menu items:', error);
+            if (window.SugarBowlErrorHandler) {
+                const errorInfo = window.SugarBowlErrorHandler.handleNetworkError(error, 'getMenuItems');
+                console.error('Error fetching menu items:', errorInfo);
+            } else {
+                console.error('Error fetching menu items:', error);
+            }
             return [];
         }
     }

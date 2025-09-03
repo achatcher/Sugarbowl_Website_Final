@@ -23,7 +23,7 @@
     --border-radius: 8px;
     --transition: all 0.3s ease;
     --grungy-highlight: rgba(255, 255, 255, 0.03);
-    --header-height: 110px;          /* Updated for logo + nav */
+    --header-height: 130px;          /* Updated for logo + nav with extra buffer */
     --nav-height: 0px;               /* No longer needed */
 }
 
@@ -61,6 +61,11 @@ body {
 /*--------------------------------------------------------------
 # Layout & Container - Updated for Top Nav
 --------------------------------------------------------------*/
+
+/* Hide breadcrumb navigation */
+.breadcrumb {
+    display: none;
+}
 .app-container {
     display: flex;
     flex-direction: column;
@@ -83,7 +88,7 @@ main {
 .page {
     display: none;
     animation: fadeIn 0.4s;
-    padding-top: 10px;
+    padding-top: 20px;
     padding-bottom: 20px; /* Reduced since no bottom nav */
 }
 
@@ -119,8 +124,24 @@ main {
     margin-bottom: 12px;
 }
 
+.logo a {
+    text-decoration: none;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.logo a:hover {
+    transform: scale(1.05);
+}
+
+.logo a:focus {
+    outline: 2px solid var(--blue-text);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
 .logo img {
-    height: 40px;
+    height: 50px;
     padding: 2px;
     filter: drop-shadow(0 0 3px rgba(212, 175, 55, 0.5));
     animation: subtle-pulse 4s infinite alternate ease-in-out;
@@ -412,6 +433,46 @@ h3 {
     transform: scale(1.02);
 }
 
+/* Burger availability styling for home page */
+.burger-preview .burger-availability,
+.burger-info .burger-availability {
+    background-color: rgba(43, 77, 168, 0.1);
+    padding: 12px 20px;
+    border-radius: var(--border-radius);
+    display: inline-block;
+    margin: 15px auto;
+    text-align: center;
+}
+
+.burger-preview .availability-label,
+.burger-info .availability-label {
+    color: var(--light-text);
+    font-size: 0.9rem;
+    font-weight: 400;
+    margin-bottom: 5px;
+    line-height: 1;
+}
+
+.burger-preview .availability-dates,
+.burger-info .availability-dates {
+    color: var(--blue-text);
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+/* Add padding above See Details button */
+.burger-preview .btn {
+    margin-top: 15px;
+}
+
+/* Smaller description text for home page burger */
+.burger-preview p,
+.burger-info p {
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
 .today-event {
     padding: 20px;
     border-left: 3px solid var(--primary-color);
@@ -697,6 +758,46 @@ h3 {
     position: relative;
 }
 
+.burger-details {
+    text-align: center;
+}
+
+/* Left-align section headings */
+.burger-spotlight h3 {
+    text-align: left;
+    position: relative;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.burger-spotlight h3::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background-color: var(--accent-color);
+}
+
+.food-carousel-section h3 {
+    text-align: left;
+    position: relative;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.food-carousel-section h3::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background-color: var(--accent-color);
+}
+
 .burger-spotlight .burger-image,
 .current-burger img {
     width: 100%;
@@ -731,14 +832,27 @@ h3 {
 }
 
 .burger-spotlight .burger-availability {
-    color: var(--blue-text);
     background-color: rgba(43, 77, 168, 0.1);
-    padding: 8px 15px;
+    padding: 12px 20px;
     border-radius: var(--border-radius);
-    display: inline-block;
-    margin: 10px 0;
-    font-weight: 500;
+    margin: 15px auto;
     text-align: center;
+    display: inline-block;
+}
+
+.burger-spotlight .availability-label {
+    color: var(--light-text);
+    font-size: 0.9rem;
+    font-weight: 400;
+    margin-bottom: 5px;
+    line-height: 1;
+}
+
+.burger-spotlight .availability-dates {
+    color: var(--blue-text);
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1;
 }
 
 .ingredients {
@@ -969,6 +1083,83 @@ h3 {
 
 .calendar-day.today {
     background-color: rgba(43, 77, 168, 0.2);
+}
+
+/*--------------------------------------------------------------
+# Events Page - Upcoming Events and Booking
+--------------------------------------------------------------*/
+.events-page-upcoming {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    margin: 30px 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(75, 108, 196, 0.2);
+}
+
+.events-page-upcoming::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-dark), var(--primary-light));
+}
+
+.events-page-upcoming h3 {
+    position: relative;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.events-page-upcoming h3::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background-color: var(--accent-color);
+}
+
+.booking-contact {
+    text-align: center;
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 25px 20px;
+    margin: 30px 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(75, 108, 196, 0.2);
+}
+
+.booking-contact p {
+    color: var(--light-text);
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.booking-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+    transition: all 0.3s ease;
+}
+
+.booking-btn:hover {
+    background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(43, 77, 168, 0.4);
+}
+
+.booking-btn i {
+    font-size: 0.9rem;
 }
 
 /*--------------------------------------------------------------
@@ -1320,7 +1511,7 @@ footer::before {
     }
     
     .logo img {
-        height: 35px;
+        height: 45px;
     }
     
     .logo h1 {
@@ -1423,7 +1614,12 @@ footer::before {
 @media (min-width: 768px) {
     main {
         padding: 20px;
+        padding-top: 30px;
         max-width: 800px;
+    }
+    
+    .page {
+        padding-top: 30px;
     }
     
     .hero {
@@ -1440,6 +1636,30 @@ footer::before {
         grid-template-columns: 1fr 1fr;
         gap: 25px;
         margin-bottom: 35px;
+        align-items: stretch;
+    }
+    
+    /* Ensure info cards have equal height */
+    .quick-info .info-card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    
+    /* Make upcoming events container fill available space */
+    .upcoming-events-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    
+    /* Make burger preview container fill available space */
+    .burger-preview {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
     
     /* Instagram feed spans full width below */
@@ -1488,17 +1708,44 @@ footer::before {
     }
     
     .logo img {
-        height: 45px;
+        height: 55px;
     }
     
     .logo h1 {
         font-size: 1.6rem;
+    }
+    
+    /* Show nav text labels on desktop like mobile */
+    .main-nav .nav-text {
+        position: static !important;
+        transform: none !important;
+        opacity: 1 !important;
+        font-size: 0.8rem !important;
+        margin-top: 2px !important;
+        bottom: auto !important;
+        left: auto !important;
+        pointer-events: auto !important;
     }
 }
 
 @media (min-width: 1024px) {
     .instagram-feed {
         padding: 30px;
+    }
+}
+
+/* Landscape orientation adjustments */
+@media (orientation: landscape) and (max-height: 600px) {
+    :root {
+        --header-height: 140px;
+    }
+    
+    .page {
+        padding-top: 40px;
+    }
+    
+    main {
+        padding-top: 40px;
     }
 }
 

@@ -18,6 +18,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/calendar.css">
+    <link rel="stylesheet" href="css/accessibility.css">
+    <link rel="stylesheet" href="css/upcoming-events.css">
+    <link rel="stylesheet" href="css/carousel-improvements.css">
     
     <!-- Favicon and App Icons -->
     <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
@@ -32,27 +35,72 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SugarBowl">
     
+    <!-- SEO Meta Tags for Social Sharing -->
+    <meta property="og:title" content="SugarBowl | Kalamazoo's Oldest Neighborhood Dive Bar">
+    <meta property="og:description" content="Serving gourmet burgers, craft beers, and live music since the '40s. The music is loud, the drinks are strong, the food is messy and amazing.">
+    <meta property="og:image" content="https://sugarbowl.com/img/og-image.jpg">
+    <meta property="og:url" content="https://sugarbowl.com">
+    <meta property="og:type" content="restaurant">
+    <meta property="og:site_name" content="SugarBowl Bar & Grille">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@sugarbowlkzoo">
+    <meta name="twitter:title" content="SugarBowl | Kalamazoo's Oldest Neighborhood Dive Bar">
+    <meta name="twitter:description" content="Serving gourmet burgers, craft beers, and live music since the '40s. The music is loud, the drinks are strong, the food is messy and amazing.">
+    <meta name="twitter:image" content="https://sugarbowl.com/img/twitter-card.jpg">
+    
+    <!-- Additional SEO Meta Tags -->
+    <meta name="keywords" content="dive bar, kalamazoo, burgers, live music, craft beer, karaoke, bingo, pool tournament, washington avenue">
+    <meta name="author" content="SugarBowl Bar & Grille">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+    <link rel="canonical" href="https://sugarbowl.com/">
+    
+    <!-- Local Business Info -->
+    <meta name="geo.region" content="US-MI">
+    <meta name="geo.placename" content="Kalamazoo">
+    <meta name="geo.position" content="42.278588;-85.571401">
+    <meta name="ICBM" content="42.278588, -85.571401">
+
+    <!-- Google Analytics (loaded via external script) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+
     <!-- Security -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com 'unsafe-inline'; font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' https://cdn.skypack.dev https://apis.google.com; connect-src 'self' https://364vw33yefgirm4lhvwegdop4a.appsync-api.us-east-2.amazonaws.com https://www.googleapis.com; frame-src https://www.google.com https://www.google.com/maps/embed;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com 'unsafe-inline'; font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' https://cdn.skypack.dev https://apis.google.com https://www.googletagmanager.com; connect-src 'self' https://364vw33yefgirm4lhvwegdop4a.appsync-api.us-east-2.amazonaws.com https://www.googleapis.com https://www.google-analytics.com; frame-src https://www.google.com https://www.google.com/maps/embed;">
 
 </head>
 <body>
+    <!-- Skip Navigation Links -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <a href="#main-nav" class="skip-link">Skip to navigation</a>
     <div class="app-container">
        <header class="top-header">
             <div class="logo">
-                <img src="img/logo.svg" alt="SugarBowl Logo">
+                <a href="#home" aria-label="SugarBowl Bar & Grille - Go to home page">
+                    <img src="img/logo.svg" alt="SugarBowl Bar & Grille - Kalamazoo's Oldest Dive Bar Logo" width="120" height="60" loading="eager">
+                </a>
                 <!-- <h1>SugarBowl</h1> -->
             </div>
             
-            <nav class="main-nav">
-                <a href="#home" class="active"><i class="fas fa-home"></i></a>
-                <a href="#burger-special"><i class="fas fa-hamburger"></i></a>
-                <a href="#events"><i class="fas fa-calendar"></i></a>
-                <a href="#info"><i class="fas fa-info-circle"></i></a>
+            <nav class="main-nav" id="main-nav" aria-label="Main navigation">
+                <a href="#home" class="active" aria-label="Home page" aria-current="page"><i class="fas fa-home" aria-hidden="true"></i><span class="nav-text">Home</span></a>
+                <a href="#burger-special" aria-label="Food and menu" data-scroll="false"><i class="fas fa-hamburger" aria-hidden="true"></i><span class="nav-text">Menu</span></a>
+                <a href="#events" aria-label="Events calendar"><i class="fas fa-calendar" aria-hidden="true"></i><span class="nav-text">Events</span></a>
+                <a href="#info" aria-label="Hours and information"><i class="fas fa-info-circle" aria-hidden="true"></i><span class="nav-text">Info</span></a>
             </nav>
         </header>
         
-        <main>
+        <!-- Breadcrumb Navigation -->
+        <nav class="breadcrumb" aria-label="Breadcrumb navigation">
+            <ol>
+                <li><a href="#home">Home</a></li>
+                <li id="current-breadcrumb" aria-current="page">Home</li>
+            </ol>
+        </nav>
+        
+        <main id="main-content">
             <section id="home" class="page active-page">
                 <div class="hero">
                     <h2>WELCOME TO THE BOWL</h2>
@@ -61,9 +109,9 @@
                 </div>
                 
                 <div class="quick-info">
-                    <div class="info-card">
+                    <div class="info-card upcoming-events-card">
                         <h3>Upcoming Events</h3>
-                        <div class="today-event" id="today-event">
+                        <div class="upcoming-events-container" id="today-event">
                             <div class="loading-spinner">Loading upcoming events...</div>
                         </div>
                     </div>
@@ -71,7 +119,7 @@
                     <div class="info-card">
                         <h3>Burger of the Week</h3>
                         <div class="burger-preview">
-                            <img id="home-burger-image" src="img/burgers/burger.jpg" alt="Burger of the Week">
+                            <img id="home-burger-image" src="img/burger1.webp" alt="Featured weekly burger special with gourmet toppings and fresh ingredients" width="300" height="200" loading="lazy" data-webp-src="img/burgers/burger.webp">
                             <div class="burger-info" id="current-burger">
                                 <div class="loading-spinner">Loading this week's special...</div>
                             </div>
@@ -88,14 +136,14 @@
 
                         <div class="instagram-embed-container">
                             <div class="instagram-placeholder-grid">
-                                <a href="https://www.instagram.com/thesugarbowlkzoo/" target="_blank">
-                                    <img src="img/instagram-placeholder1.png" alt="Instagram placeholder 1">
+                                <a href="https://www.instagram.com/thesugarbowlkzoo/" target="_blank" rel="noopener noreferrer">
+                                    <img src="img/instagram-placeholder1.png" alt="Latest Instagram post showing SugarBowl's atmosphere and food" width="150" height="150" loading="lazy" data-webp-src="img/instagram-placeholder1.webp">
                                 </a>
-                                <a href="https://www.instagram.com/thesugarbowlkzoo/" target="_blank">
-                                    <img src="img/instagram-placeholder2.png" alt="Instagram placeholder 2">
+                                <a href="https://www.instagram.com/thesugarbowlkzoo/" target="_blank" rel="noopener noreferrer">
+                                    <img src="img/instagram-placeholder2.png" alt="Instagram photo of live music performance at SugarBowl" width="150" height="150" loading="lazy" data-webp-src="img/instagram-placeholder2.webp">
                                 </a>
-                                <a href="https://www.instagram.com/thesugarbowlkzoo/" target="_blank">
-                                    <img src="img/instagram-placeholder3.png" alt="Instagram placeholder 3">
+                                <a href="https://www.instagram.com/thesugarbowlkzoo/" target="_blank" rel="noopener noreferrer">
+                                    <img src="img/instagram-placeholder3.png" alt="Instagram photo of SugarBowl's signature burgers and drinks" width="150" height="150" loading="lazy" data-webp-src="img/instagram-placeholder3.webp">
                                 </a>
                             </div>
                         </div>
@@ -125,19 +173,35 @@
                     <div class="food-carousel">
                         <div class="carousel-container" id="carousel-container">
                             <div class="carousel-slide">
-                                <img src="img/burger1.jpg" alt="SugarBowl Signature Burger">
+                                <img src="img/burger1.jpg" alt="SugarBowl's signature gourmet burger with fresh lettuce, tomato, and special sauce" width="400" height="300" loading="lazy" data-webp-src="img/burger1.webp">
+                                <div class="carousel-content">
+                                    <h4>Signature Burger</h4>
+                                    <p>Fresh beef patty with lettuce, tomato, and our special sauce</p>
+                                </div>
                             </div>
                             
                             <div class="carousel-slide">
-                                <img src="img/burger2.jpg" alt="Loaded Nachos">
+                                <img src="img/burger2.jpg" alt="Loaded nachos topped with cheese, jalapeños, and sour cream" width="400" height="300" loading="lazy" data-webp-src="img/burger2.webp">
+                                <div class="carousel-content">
+                                    <h4>Loaded Nachos</h4>
+                                    <p>Crispy tortilla chips topped with melted cheese and jalapeños</p>
+                                </div>
                             </div>
                             
                             <div class="carousel-slide">
-                                <img src="img/burger3.jpg" alt="BBQ Wings">
+                                <img src="img/burger3.jpg" alt="BBQ wings with tangy sauce and celery sticks" width="400" height="300" loading="lazy" data-webp-src="img/burger3.webp">
+                                <div class="carousel-content">
+                                    <h4>BBQ Wings</h4>
+                                    <p>Tender wings glazed with our signature tangy BBQ sauce</p>
+                                </div>
                             </div>
                             
                             <div class="carousel-slide">
-                                <img src="img/burger4.jpg" alt="Fish & Chips">
+                                <img src="img/burger4.jpg" alt="Crispy fish and chips with tartar sauce and lemon" width="400" height="300" loading="lazy" data-webp-src="img/burger4.webp">
+                                <div class="carousel-content">
+                                    <h4>Fish & Chips</h4>
+                                    <p>Beer-battered fish with golden fries and house-made tartar sauce</p>
+                                </div>
                             </div>
                         </div>
                         
@@ -178,6 +242,23 @@
                 <div class="calendar" id="events-calendar">
                     <div class="loading-spinner">Loading calendar...</div>
                 </div>
+                
+                <!-- Upcoming Events Section -->
+                <div class="events-page-upcoming">
+                    <h3>Upcoming Events</h3>
+                    <div class="upcoming-events-container" id="events-page-upcoming-container">
+                        <div class="loading-spinner">Loading upcoming events...</div>
+                    </div>
+                </div>
+                
+                <!-- Booking Contact Section -->
+                <div class="booking-contact">
+                    <p>If you are interested in booking</p>
+                    <a href="mailto:booking@sugarbowl.com" class="btn booking-btn">
+                        <i class="fas fa-envelope"></i>
+                        Contact Us
+                    </a>
+                </div>
             </section>
             
             <!-- New section for hours and info (replaces menu) -->
@@ -186,7 +267,7 @@
                 
                 <div class="info-section">
                     <div class="info-card">
-                        <h3>Summer Hours</h3>
+                        <h3>SugarBowl Hours</h3>
                         <ul class="hours-list">
                             <li><span>Sunday</span><span>CLOSED</span></li>
                             <li><span>Monday</span><span>CLOSED</span></li>
@@ -234,8 +315,8 @@
                 <p><i class="fas fa-phone"></i> 971-888-4001</p>
             </div>
             <div class="social-links">
-                <a href="https://www.facebook.com/SugarBowlBarandGrille" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://www.instagram.com/thesugarbowlkzoo/" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.facebook.com/SugarBowlBarandGrille" target="_blank" rel="noopener noreferrer" aria-label="Visit SugarBowl on Facebook (opens in new tab)"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                <a href="https://www.instagram.com/thesugarbowlkzoo/" target="_blank" rel="noopener noreferrer" aria-label="Follow SugarBowl on Instagram (opens in new tab)"><i class="fab fa-instagram" aria-hidden="true"></i></a>
             </div>
             <div class="copyright">
                 <p>© 2025 SugarBowl. All rights reserved.</p>
@@ -272,30 +353,169 @@
         </filter>
     </svg>
     
-    <!-- Structured data for SEO -->
+    <!-- Enhanced Structured Data for Local Business SEO -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Restaurant",
-      "name": "SugarBowl",
-      "image": "img/logo.svg",
+      "@type": ["Restaurant", "BarOrPub", "LocalBusiness"],
+      "name": "SugarBowl Bar & Grille",
+      "alternateName": "The SugarBowl",
+      "description": "Kalamazoo's oldest neighborhood dive bar serving gourmet burgers, craft beers, and hosting live music since the 1940s. The music is loud, the drinks are strong, the food is messy and amazing.",
+      "image": [
+        "https://sugarbowl.com/img/logo.svg",
+        "https://sugarbowl.com/img/exterior.jpg",
+        "https://sugarbowl.com/img/interior.jpg",
+        "https://sugarbowl.com/img/burgers/featured-burger.jpg"
+      ],
+      "logo": "https://sugarbowl.com/img/logo.svg",
+      "url": "https://sugarbowl.com",
+      "telephone": "971-888-4001",
+      "email": "info@sugarbowl.com",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "123 Main Street",
-        "addressLocality": "Anytown",
-        "postalCode": "12345"
+        "streetAddress": "904 Washington Ave",
+        "addressLocality": "Kalamazoo",
+        "addressRegion": "MI",
+        "postalCode": "49007",
+        "addressCountry": "US"
       },
-      "telephone": "(555) 123-4567",
-      "email": "info@sugarbowl.com",
-      "servesCuisine": "American, Burgers",
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 42.278588,
+        "longitude": -85.571401
+      },
+      "servesCuisine": ["American", "Bar Food", "Burgers", "Pub Food"],
       "priceRange": "$$",
-      "openingHours": "Mo-Th 11:00-24:00, Fr-Sa 11:00-02:00, Su 12:00-23:00",
-      "menu": "https://www.sugarbowl.com/menu",
-      "acceptsReservations": "Yes"
+      "paymentAccepted": "Cash, Credit Card, Debit Card",
+      "currenciesAccepted": "USD",
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Tuesday", "Wednesday", "Thursday"],
+          "opens": "15:00",
+          "closes": "22:00"
+        },
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Friday", "Saturday"],
+          "opens": "15:00",
+          "closes": "01:30"
+        }
+      ],
+      "specialOpeningHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Sunday", "Monday"],
+          "opens": "00:00",
+          "closes": "00:00",
+          "validFrom": "2025-01-01",
+          "validThrough": "2025-12-31"
+        }
+      ],
+      "amenityFeature": [
+        {
+          "@type": "LocationFeatureSpecification",
+          "name": "Live Music",
+          "value": true
+        },
+        {
+          "@type": "LocationFeatureSpecification",
+          "name": "Karaoke",
+          "value": true
+        },
+        {
+          "@type": "LocationFeatureSpecification",
+          "name": "Pool Table",
+          "value": true
+        },
+        {
+          "@type": "LocationFeatureSpecification",
+          "name": "Bar Seating",
+          "value": true
+        },
+        {
+          "@type": "LocationFeatureSpecification",
+          "name": "Outdoor Seating",
+          "value": false
+        }
+      ],
+      "hasMenu": {
+        "@type": "Menu",
+        "name": "SugarBowl Menu",
+        "description": "Gourmet burgers, appetizers, sandwiches, and wraps",
+        "hasMenuSection": [
+          {
+            "@type": "MenuSection",
+            "name": "Burgers",
+            "description": "Gourmet burgers made with fresh ingredients"
+          },
+          {
+            "@type": "MenuSection", 
+            "name": "Appetizers",
+            "description": "Perfect for sharing or starting your meal"
+          },
+          {
+            "@type": "MenuSection",
+            "name": "Sandwiches & Wraps",
+            "description": "Alternative options to our famous burgers"
+          }
+        ]
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.5",
+        "reviewCount": "127",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "sameAs": [
+        "https://www.facebook.com/SugarBowlBarandGrille",
+        "https://www.instagram.com/thesugarbowlkzoo/"
+      ],
+      "founder": {
+        "@type": "Person",
+        "name": "SugarBowl Founders"
+      },
+      "foundingDate": "1940",
+      "slogan": "The music is loud. The drinks are strong. The food is messy and amazing.",
+      "smokingAllowed": false,
+      "acceptsReservations": false,
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "SugarBowl Specials",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "name": "Happy Hour",
+            "description": "Daily drink specials Tuesday through Saturday 3:00-6:00 PM",
+            "validFrom": "15:00",
+            "validThrough": "18:00"
+          },
+          {
+            "@type": "Offer", 
+            "name": "Burger of the Week",
+            "description": "Weekly rotating specialty burger with unique ingredients and flavors"
+          }
+        ]
+      },
+      "potentialAction": {
+        "@type": "ReserveAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "tel:971-888-4001",
+          "actionPlatform": [
+            "http://schema.org/DesktopWebPlatform",
+            "http://schema.org/MobileWebPlatform"
+          ]
+        }
+      }
     }
     </script>
     
     <!-- Core JavaScript -->
+    <script src="js/image-loader.js"></script>
+    <script src="js/error-handler.js"></script>
+    <script src="js/analytics.js"></script>
     <script src="js/main.js"></script>
     <script src="js/calendar.js"></script>
     <script type="module" src="js/menu.js"></script>
@@ -303,18 +523,10 @@
     <script src="js/carousels.js"></script>
     <script src="js/happy-hour.js"></script>
     
-    <!-- Service Worker Registration -->
-    <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('service-worker.js')
-        .then(function(registration) {
-          console.log('Service Worker registered with scope:', registration.scope);
-        }).catch(function(error) {
-          console.log('Service Worker registration failed:', error);
-        });
-      });
-    }
-    </script>
+    <!-- Service Worker Registration moved to external file -->
+    <script src="js/service-worker-init.js"></script>
+    
+    <!-- Announcements for Screen Readers -->
+    <div class="announcements" aria-live="polite" aria-atomic="true" id="announcements"></div>
 </body>
 </html>

@@ -1,0 +1,381 @@
+/*--------------------------------------------------------------
+# Enhanced SugarBowl Eats Carousel
+--------------------------------------------------------------*/
+
+/* Override existing carousel styles with professional improvements */
+.food-carousel-section {
+    margin: 30px 0;
+}
+
+.food-carousel-section h3 {
+    color: var(--blue-text);
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    text-align: left;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.food-carousel-section h3::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background-color: var(--accent-color);
+}
+
+/* Enhanced carousel container */
+.food-carousel {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    background: var(--card-bg);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    border: 2px solid rgba(75, 108, 196, 0.3);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.carousel-container {
+    display: flex;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.carousel-slide {
+    min-width: 100%;
+    position: relative;
+    aspect-ratio: 4/3; /* Fixed aspect ratio to prevent stretching */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--darker-bg);
+}
+
+/* Professional image styling */
+.carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.3s ease;
+    border-radius: 0;
+}
+
+.carousel-slide:hover img {
+    transform: scale(1.02);
+}
+
+/* Enhanced overlay content */
+.carousel-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.9) 0%,
+        rgba(0, 0, 0, 0.7) 50%,
+        transparent 100%
+    );
+    padding: 12px 15px 10px;
+    color: var(--light-text);
+    backdrop-filter: blur(2px);
+}
+
+.carousel-content h4 {
+    font-size: 1rem;
+    margin-bottom: 4px;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    line-height: 1.2;
+}
+
+.carousel-content p {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 6px;
+    line-height: 1.3;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.carousel-price {
+    color: var(--blue-text);
+    font-weight: 700;
+    font-size: 1.3rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    background: rgba(167, 198, 255, 0.2);
+    padding: 4px 8px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+/* Modern carousel controls */
+.carousel-controls {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 0;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    z-index: 10;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.carousel-prev {
+    left: 20px;
+}
+
+.carousel-next {
+    right: 20px;
+}
+
+.carousel-controls:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-light);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 6px 20px rgba(43, 77, 168, 0.4);
+}
+
+.carousel-controls:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+/* Enhanced indicators */
+.carousel-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        rgba(0, 0, 0, 0.05)
+    );
+}
+
+.carousel-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+}
+
+.carousel-dot:hover {
+    background: rgba(255, 255, 255, 0.7);
+    transform: scale(1.2);
+}
+
+.carousel-dot.active {
+    background: var(--primary-color);
+    border-color: var(--primary-light);
+    transform: scale(1.3);
+    box-shadow: 0 0 12px rgba(43, 77, 168, 0.6);
+}
+
+.carousel-dot.active::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+}
+
+/* Loading state for carousel */
+.carousel-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    background: var(--card-bg);
+    color: var(--muted-text);
+    border-radius: 12px;
+}
+
+/* Touch/swipe indicators */
+.carousel-slide::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -2px;
+    right: -2px;
+    bottom: 0;
+    background: transparent;
+    pointer-events: none;
+    z-index: 1;
+    transition: background 0.2s ease;
+}
+
+.carousel-slide.swiping::before {
+    background: rgba(167, 198, 255, 0.1);
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .food-carousel {
+        margin: 0 -10px;
+        border-radius: 8px;
+        max-width: none;
+    }
+    
+    .carousel-slide {
+        aspect-ratio: 3/2;
+    }
+    
+    .carousel-content {
+        padding: 20px 15px 15px;
+    }
+    
+    .carousel-content h4 {
+        font-size: 1.3rem;
+        letter-spacing: 1px;
+    }
+    
+    .carousel-content p {
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+    }
+    
+    .carousel-price {
+        font-size: 1.1rem;
+    }
+    
+    .carousel-controls {
+        width: 42px;
+        height: 42px;
+        font-size: 1rem;
+    }
+    
+    .carousel-prev {
+        left: 15px;
+    }
+    
+    .carousel-next {
+        right: 15px;
+    }
+    
+    .carousel-indicators {
+        padding: 15px;
+        gap: 8px;
+    }
+    
+    .carousel-dot {
+        width: 10px;
+        height: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .food-carousel-section h3 {
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+    }
+    
+    .carousel-content {
+        padding: 15px 12px 12px;
+    }
+    
+    .carousel-content h4 {
+        font-size: 1.2rem;
+    }
+    
+    .carousel-content p {
+        font-size: 0.8rem;
+        line-height: 1.3;
+    }
+    
+    .carousel-price {
+        font-size: 1rem;
+        padding: 3px 6px;
+    }
+    
+    .carousel-controls {
+        width: 38px;
+        height: 38px;
+        font-size: 0.9rem;
+    }
+    
+    .carousel-prev {
+        left: 10px;
+    }
+    
+    .carousel-next {
+        right: 10px;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .carousel-controls {
+        background: black;
+        border-color: white;
+    }
+    
+    .carousel-dot {
+        background: white;
+        border: 1px solid black;
+    }
+    
+    .carousel-dot.active {
+        background: var(--primary-color);
+        border-color: white;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .carousel-container {
+        transition: none;
+    }
+    
+    .carousel-slide img {
+        transition: none;
+    }
+    
+    .carousel-slide:hover img {
+        transform: none;
+    }
+    
+    .carousel-controls,
+    .carousel-dot {
+        transition: none;
+    }
+    
+    .carousel-controls:hover {
+        transform: translateY(-50%);
+    }
+}
+
+/* Focus states for accessibility */
+.carousel-controls:focus {
+    outline: 2px solid var(--blue-text);
+    outline-offset: 2px;
+}
+
+.carousel-dot:focus {
+    outline: 2px solid var(--blue-text);
+    outline-offset: 2px;
+}

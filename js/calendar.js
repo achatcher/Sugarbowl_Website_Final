@@ -206,6 +206,48 @@
     let events = {};
     
     /**
+     * Add recurring weekly events to the events object
+     * This ensures we always have weekly events even if Google Calendar fails
+     */
+    function addRecurringEvents() {
+        const now = new Date();
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        const endOfYear = new Date(now.getFullYear(), 11, 31);
+        
+        // Generate recurring events for the entire year
+        for (let date = new Date(startOfYear); date <= endOfYear; date.setDate(date.getDate() + 1)) {
+            const dayOfWeek = date.getDay();
+            
+            if (RECURRING_EVENTS[dayOfWeek]) {
+                const dateString = formatDateString(date);
+                
+                // Only add if we don't already have events for this date
+                if (!events[dateString]) {
+                    events[dateString] = [];
+                }
+                
+                // Add all recurring events for this day
+                RECURRING_EVENTS[dayOfWeek].forEach(recurringEvent => {
+                    // Check if we already have this event (avoid duplicates)
+                    const exists = events[dateString].some(existing => 
+                        existing.title === recurringEvent.title
+                    );
+                    
+                    if (!exists) {
+                        events[dateString].push({
+                            ...recurringEvent,
+                            date: dateString,
+                            source: 'recurring'
+                        });
+                    }
+                });
+            }
+        }
+        
+        debugLog(`Added recurring events for ${Object.keys(RECURRING_EVENTS).length} days of week`);
+    }
+    
+    /**
      * Initialize the calendar module
      */
     function init() {
@@ -228,21 +270,18 @@
             setupExistingModal();
         }
         
-        // Load events from Google Calendar if enabled
-        if (CONFIG.syncEnabled) {
-            loadGoogleApi();
-        } else {
-            // Use local events
-            if (CONFIG.useLocalEvents) {
-                events = JSON.parse(JSON.stringify(localEvents)); // Clone local events
-                renderCalendar();
-                updateTodayEvent();
-            }
+        // Always load local events first for immediate display
+        if (CONFIG.useLocalEvents) {
+            events = JSON.parse(JSON.stringify(localEvents)); // Clone local events
+            addRecurringEvents(); // Add weekly recurring events
+            renderCalendar();
+            updateTodayEvent();
         }
         
-        // Render the calendar with whatever data we have
-        renderCalendar();
-        updateTodayEvent();
+        // Then try to load from Google Calendar if enabled (will merge with local events)
+        if (CONFIG.syncEnabled) {
+            loadGoogleApi();
+        }
     }
     
     /**
@@ -293,18 +332,38 @@
     function fetchGoogleCalendarEvents() {
         debugLog('Fetching Google Calendar events');
         
+        // Check if API is available
+        if (!window.gapi || !gapi.client || !gapi.client.calendar) {
+            debugLog('Google Calendar API not available', 'error');
+            handleApiError(new Error('Google Calendar API not initialized'));
+            return;
+        }
+        
         // Calculate time ranges (3 months before and after current month)
         const timeMin = new Date(currentYear, currentMonth - 3, 1).toISOString();
         const timeMax = new Date(currentYear, currentMonth + 4, 0).toISOString();
         
-        gapi.client.calendar.events.list({
-            calendarId: CONFIG.googleCalendarId,
-            timeMin: timeMin,
-            timeMax: timeMax,
-            maxResults: CONFIG.maxResults,
-            singleEvents: true,
-            orderBy: 'startTime'
-        }).then(processCalendarEvents).catch(handleApiError);
+        debugLog(`Fetching events from ${timeMin} to ${timeMax}`);
+        
+        try {
+            gapi.client.calendar.events.list({
+                calendarId: CONFIG.googleCalendarId,
+                timeMin: timeMin,
+                timeMax: timeMax,
+                maxResults: CONFIG.maxResults,
+                singleEvents: true,
+                orderBy: 'startTime'
+            }).then(response => {
+                debugLog('Received response from Google Calendar API');
+                processCalendarEvents(response);
+            }).catch(error => {
+                debugLog('Google Calendar API request failed: ' + error.message, 'error');
+                handleApiError(error);
+            });
+        } catch (error) {
+            debugLog('Error making Google Calendar API request: ' + error.message, 'error');
+            handleApiError(error);
+        }
     }
     
     /**
@@ -313,10 +372,24 @@
      */
     function processCalendarEvents(response) {
         debugLog('Processing calendar events');
-        const items = response.result.items;
         
-        // Convert Google Calendar events to our format
-        events = {};
+        // Enhanced error checking for API response
+        if (!response || !response.result) {
+            debugLog('Invalid response structure from Google Calendar API', 'error');
+            throw new Error('Invalid API response structure');
+        }
+        
+        const items = response.result.items || [];
+        
+        if (!Array.isArray(items)) {
+            debugLog('Calendar API returned invalid items structure', 'error');
+            throw new Error('Invalid items structure in API response');
+        }
+        
+        debugLog(`Processing ${items.length} calendar events`);
+        
+        // Convert Google Calendar events to our format and merge with existing events
+        // Don't reset events object - preserve local/recurring events
         
         items.forEach(event => {
             // Get start and end times
@@ -439,9 +512,19 @@
         debugLog('Failed to load Google API', 'error');
         showLoading(false);
         
+        // Use enhanced error handler if available
+        if (window.SugarBowlErrorHandler) {
+            window.SugarBowlErrorHandler.apiErrorHandlers.handleCalendarError(
+                new Error('Google Calendar API failed to load'),
+                document.getElementById('events-calendar')
+            );
+        }
+        
         // Fall back to local events
         if (CONFIG.useLocalEvents) {
+            debugLog('Falling back to local events');
             events = JSON.parse(JSON.stringify(localEvents)); // Clone local events
+            addRecurringEvents(); // Add weekly recurring events
             renderCalendar();
             updateTodayEvent();
         }
@@ -455,11 +538,27 @@
         debugLog('Google API error: ' + JSON.stringify(error), 'error');
         showLoading(false);
         
+        // Use enhanced error handler if available
+        if (window.SugarBowlErrorHandler) {
+            window.SugarBowlErrorHandler.apiErrorHandlers.handleCalendarError(
+                error,
+                document.getElementById('events-calendar')
+            );
+        }
+        
         // Fall back to local events
         if (CONFIG.useLocalEvents) {
+            debugLog('Falling back to local events after API error');
             events = JSON.parse(JSON.stringify(localEvents)); // Clone local events
+            addRecurringEvents(); // Add weekly recurring events
             renderCalendar();
             updateTodayEvent();
+        } else {
+            // Show error message if no fallback available
+            const calendarEl = document.getElementById('events-calendar');
+            if (calendarEl) {
+                calendarEl.innerHTML = '<div class="error-message">Unable to load calendar events. Please try again later.</div>';
+            }
         }
     }
     
@@ -1006,42 +1105,286 @@
     }
     
     /**
-     * Update today's event on the homepage
+     * Get upcoming events starting from today
+     * @param {Number} limit - Maximum number of events to return
+     * @returns {Array} Array of upcoming events with dates
      */
-    function updateTodayEvent() {
-        const todayEvent = document.getElementById('today-event');
-        if (!todayEvent) return;
+    function getUpcomingEvents(limit = 3) {
+        const upcomingEvents = [];
+        const today = new Date();
+        const maxDaysAhead = 30; // Look ahead 30 days maximum
         
-        const todayString = formatDateString(today);
-        
-        if (events[todayString] && events[todayString].length > 0) {
-            // Get first event or featured event if available
-            const featuredEvent = events[todayString].find(e => e.featured) || events[todayString][0];
+        for (let daysAhead = 0; daysAhead < maxDaysAhead && upcomingEvents.length < limit; daysAhead++) {
+            const checkDate = new Date(today);
+            checkDate.setDate(today.getDate() + daysAhead);
+            const dateString = formatDateString(checkDate);
             
-            // Format event display
-            const eventHtml = `
-                <h2>${featuredEvent.title}</h2>
-                <div class="event-time">
-                    <i class="far fa-clock" aria-hidden="true"></i> 
-                    ${featuredEvent.time}
+            if (events[dateString] && events[dateString].length > 0) {
+                events[dateString].forEach(event => {
+                    if (upcomingEvents.length < limit) {
+                        upcomingEvents.push({
+                            ...event,
+                            date: checkDate,
+                            dateString: dateString,
+                            dayName: dayOfWeekNames[checkDate.getDay()],
+                            monthName: monthNames[checkDate.getMonth()],
+                            dayNumber: checkDate.getDate(),
+                            isToday: daysAhead === 0,
+                            isTomorrow: daysAhead === 1
+                        });
+                    }
+                });
+            }
+        }
+        
+        return upcomingEvents;
+    }
+    
+    /**
+     * Format date for display (e.g., "Today", "Tomorrow", "Wed, Dec 15")
+     */
+    function formatEventDate(eventData) {
+        if (eventData.isToday) return 'Today';
+        if (eventData.isTomorrow) return 'Tomorrow';
+        
+        const dayAbbr = eventData.dayName.substring(0, 3);
+        const monthAbbr = eventData.monthName.substring(0, 3);
+        return `${dayAbbr}, ${monthAbbr} ${eventData.dayNumber}`;
+    }
+    
+    /**
+     * Update upcoming events on the homepage and events page
+     */
+    function updateUpcomingEvents() {
+        const upcomingEventsContainer = document.getElementById('today-event');
+        const eventsPageContainer = document.getElementById('events-page-upcoming-container');
+        
+        const upcomingEvents = getUpcomingEvents(5); // Get more events for events page
+        
+        // Update home page upcoming events (limit to 3) - keep original styling
+        if (upcomingEventsContainer) {
+            updateHomePageUpcomingEvents(upcomingEventsContainer, upcomingEvents.slice(0, 3));
+        }
+        
+        // Update events page upcoming events (show all 5) - use new styling
+        if (eventsPageContainer) {
+            updateEventsPageUpcomingEvents(eventsPageContainer, upcomingEvents);
+        }
+    }
+    
+    /**
+     * Update home page upcoming events (original styling)
+     */
+    function updateHomePageUpcomingEvents(container, events) {
+        if (events.length > 0) {
+            let eventsHtml = '<div class="upcoming-events-list">';
+            
+            events.forEach((event, index) => {
+                const eventDate = formatEventDate(event);
+                eventsHtml += `
+                    <div class="upcoming-event-item" data-event-date="${event.dateString}">
+                        <div class="event-info">
+                            <div class="date-label">${eventDate}</div>
+                            <div class="event-details">
+                                <h4 class="event-title">${event.title}</h4>
+                                <div class="event-time">
+                                    <i class="far fa-clock" aria-hidden="true"></i>
+                                    <span>${event.time}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="event-action">
+                            <button class="more-info-btn" 
+                                    data-event-date="${event.dateString}" 
+                                    data-event-title="${event.title}"
+                                    aria-label="More info about ${event.title}">
+                                More Info
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            eventsHtml += '</div>';
+            eventsHtml += `
+                <div class="view-all-container">
+                    <button class="btn view-all-events-btn">VIEW ALL EVENTS</button>
                 </div>
-                <p>${truncateText(featuredEvent.description, 80)}</p>
-                <button class="btn view-all-events-btn">VIEW ALL EVENTS</button>
             `;
             
-            // Update with proper error handling
             try {
-                todayEvent.innerHTML = eventHtml;
+                container.innerHTML = eventsHtml;
+                setupMoreInfoButtons();
             } catch (e) {
-                debugLog('Error updating today\'s event: ' + e.message, 'error');
-                todayEvent.innerHTML = '<p>Error loading event information</p>';
+                debugLog('Error updating upcoming events: ' + e.message, 'error');
+                container.innerHTML = '<p>Error loading event information</p>';
             }
         } else {
-            todayEvent.innerHTML = `
-                <p>No scheduled events today</p>
-                <button class="btn view-all-events-btn">VIEW ALL EVENTS</button>
+            container.innerHTML = `
+                <div class="no-upcoming-events">
+                    <p>No upcoming events scheduled</p>
+                    <button class="btn view-all-events-btn">VIEW ALL EVENTS</button>
+                </div>
             `;
         }
+    }
+    
+    /**
+     * Update events page upcoming events (new styling)
+     */
+    function updateEventsPageUpcomingEvents(container, events) {
+        if (events.length > 0) {
+            let eventsHtml = '<div class="upcoming-events-list">';
+            
+            events.forEach((event, index) => {
+                const eventDate = formatEventDate(event);
+                const isPrimary = index === 0; // First event is primary
+                
+                eventsHtml += `
+                    <div class="upcoming-event ${isPrimary ? 'primary-event' : 'secondary-event'}" data-event-date="${event.dateString}">
+                        <div class="event-date-badge">
+                            <div class="date-label">${eventDate}</div>
+                            <div class="date-full">${event.monthName} ${event.dayNumber}</div>
+                        </div>
+                        <div class="event-content">
+                            <h4>${event.title}</h4>
+                            <div class="event-time">
+                                <i class="far fa-clock" aria-hidden="true"></i>
+                                ${event.time}
+                            </div>
+                            <p>${event.description}</p>
+                            ${event.recurring ? '<span class="recurring-badge">Weekly</span>' : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            eventsHtml += '</div>';
+            
+            try {
+                container.innerHTML = eventsHtml;
+                setupEventClickHandlers(container);
+            } catch (e) {
+                debugLog('Error updating upcoming events: ' + e.message, 'error');
+                container.innerHTML = '<p>Error loading event information</p>';
+            }
+        } else {
+            container.innerHTML = `
+                <div class="no-upcoming-events">
+                    <p>No upcoming events scheduled</p>
+                </div>
+            `;
+        }
+    }
+    
+    /**
+     * Set up click handlers for "More Info" buttons (home page)
+     */
+    function setupMoreInfoButtons() {
+        const moreInfoButtons = document.querySelectorAll('.more-info-btn');
+        
+        moreInfoButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const eventDate = this.getAttribute('data-event-date');
+                const eventTitle = this.getAttribute('data-event-title');
+                
+                // Navigate to events page
+                if (window.SugarBowlApp && typeof window.SugarBowlApp.navigateTo === 'function') {
+                    window.SugarBowlApp.navigateTo('events');
+                } else {
+                    // Fallback navigation
+                    const eventLink = document.querySelector('.main-nav a[href="#events"]');
+                    if (eventLink) eventLink.click();
+                }
+                
+                // After a short delay, show the specific event
+                setTimeout(() => {
+                    showSpecificEvent(eventDate, eventTitle);
+                }, 300);
+                
+                // Track analytics
+                if (window.SugarBowlAnalytics) {
+                    window.SugarBowlAnalytics.trackCalendarInteraction('more_info_click', eventTitle);
+                }
+            });
+        });
+    }
+    
+    /**
+     * Set up click handlers for event items (events page)
+     */
+    function setupEventClickHandlers(container) {
+        const eventItems = container.querySelectorAll('.upcoming-event');
+        
+        eventItems.forEach(eventItem => {
+            eventItem.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const eventDate = this.getAttribute('data-event-date');
+                const eventTitle = this.querySelector('h4').textContent;
+                
+                // Already on events page, show event immediately
+                showSpecificEvent(eventDate, eventTitle);
+                
+                // Track analytics
+                if (window.SugarBowlAnalytics) {
+                    window.SugarBowlAnalytics.trackCalendarInteraction('upcoming_event_click', eventTitle);
+                }
+            });
+            
+            // Add keyboard accessibility
+            eventItem.setAttribute('tabindex', '0');
+            eventItem.setAttribute('role', 'button');
+            eventItem.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.click();
+                }
+            });
+        });
+    }
+    
+    /**
+     * Show specific event modal when navigating from home page
+     */
+    function showSpecificEvent(eventDate, eventTitle) {
+        // Find the day cell for this date
+        const dayCells = document.querySelectorAll('.calendar-day');
+        
+        dayCells.forEach(cell => {
+            if (cell.dataset.date === eventDate) {
+                // Simulate click on the day to show modal
+                cell.click();
+                return;
+            }
+        });
+        
+        // If day cell not found (different month), navigate to correct month first
+        const [year, month, day] = eventDate.split('-').map(Number);
+        const targetDate = new Date(year, month - 1, day);
+        
+        if (window.SugarBowlCalendar && window.SugarBowlCalendar.goToMonth) {
+            window.SugarBowlCalendar.goToMonth(month - 1, year);
+            
+            // Wait for calendar to render, then show the event
+            setTimeout(() => {
+                const updatedCells = document.querySelectorAll('.calendar-day');
+                updatedCells.forEach(cell => {
+                    if (cell.dataset.date === eventDate) {
+                        cell.click();
+                    }
+                });
+            }, 500);
+        }
+    }
+    
+    /**
+     * Update today's event on the homepage (legacy function - now calls updateUpcomingEvents)
+     */
+    function updateTodayEvent() {
+        updateUpcomingEvents();
     }
     
     /**
