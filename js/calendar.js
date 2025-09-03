@@ -13,8 +13,8 @@
 
     // Configuration
     const CONFIG = {
-        googleCalendarId: 'YOUR_CALENDAR_ID_HERE', // Replace with your actual calendar ID
-        apiKey: 'YOUR_API_KEY_HERE', // Replace with your actual API key
+        googleCalendarId: 'a399d5825336889640c827ca74c70d3bf0fe29fd70d26fb621d6c526d1443a2b@group.calendar.google.com', // Replace with your actual calendar ID
+        apiKey: 'AIzaSyAzeaXGSAcqWDaE1G-L5S-MqFgrthVKkAs', // Replace with your actual API key
         maxResults: 100,
         syncEnabled: true, // Enable Google Calendar
         useLocalEvents: true, // Keep true to use recurring events as fallback
