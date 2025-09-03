@@ -13,13 +13,13 @@
 
     // Configuration
     const CONFIG = {
-        googleCalendarId: 'a399d5825336889640c827ca74c70d3bf0fe29fd70d26fb621d6c526d1443a2b@group.calendar.google.com', // Replace with your actual calendar ID
-        apiKey: 'AIzaSyAzeaXGSAcqWDaE1G-L5S-MqFgrthVKkAs', // Replace with your actual API key
+        googleCalendarId: window.SugarBowlConfig?.googleCalendarId || 'YOUR_CALENDAR_ID_HERE',
+        apiKey: window.SugarBowlConfig?.apiKey || 'YOUR_API_KEY_HERE',
         maxResults: 100,
         syncEnabled: true, // Enable Google Calendar
         useLocalEvents: true, // Keep true to use recurring events as fallback
         cacheExpiration: 1800,
-        debugMode: true // Enable for testing
+        debugMode: true // Enable for testing - set to false in production
     };
 
     // Recurring Events Configuration - These always happen
@@ -291,16 +291,9 @@
         debugLog('Loading Google API');
         showLoading(true);
         
-        // Check if we have cached events that are still valid
-        const cachedEvents = getCachedEvents();
-        if (cachedEvents) {
-            debugLog('Using cached events');
-            events = cachedEvents;
-            renderCalendar();
-            updateTodayEvent();
-            showLoading(false);
-            return;
-        }
+        // Clear cache to get fresh data (disable caching temporarily for testing)
+        localStorage.removeItem('sugarbowl_events_cache');
+        debugLog('Cleared cache to get fresh events');
         
         // Create script element to load Google API
         const script = document.createElement('script');
@@ -332,10 +325,16 @@
     function fetchGoogleCalendarEvents() {
         debugLog('Fetching Google Calendar events');
         
+        // Check if we have valid API configuration
+        if (!CONFIG.apiKey || CONFIG.apiKey === 'YOUR_API_KEY_HERE') {
+            debugLog('Google Calendar API key not configured, using local events only', 'warn');
+            return;
+        }
+        
         // Check if API is available
         if (!window.gapi || !gapi.client || !gapi.client.calendar) {
-            debugLog('Google Calendar API not available', 'error');
-            handleApiError(new Error('Google Calendar API not initialized'));
+            debugLog('Google Calendar API not available, loading API first', 'warn');
+            // Don't call loadGoogleApi here to avoid infinite loops
             return;
         }
         
@@ -352,7 +351,8 @@
                 timeMax: timeMax,
                 maxResults: CONFIG.maxResults,
                 singleEvents: true,
-                orderBy: 'startTime'
+                orderBy: 'startTime',
+                fields: 'items(id,summary,description,start,end,location,htmlLink)'
             }).then(response => {
                 debugLog('Received response from Google Calendar API');
                 processCalendarEvents(response);
@@ -388,8 +388,28 @@
         
         debugLog(`Processing ${items.length} calendar events`);
         
-        // Convert Google Calendar events to our format and merge with existing events
-        // Don't reset events object - preserve local/recurring events
+        // Count existing events before processing
+        let totalEventsBefore = 0;
+        Object.values(events).forEach(dayEvents => totalEventsBefore += dayEvents.length);
+        debugLog(`Total events before processing: ${totalEventsBefore}`);
+        
+        // First, remove any existing Google Calendar events to prevent duplicates
+        Object.keys(events).forEach(dateStr => {
+            const beforeCount = events[dateStr].length;
+            events[dateStr] = events[dateStr].filter(event => 
+                event.source !== 'google'
+            );
+            const afterCount = events[dateStr].length;
+            if (beforeCount !== afterCount) {
+                debugLog(`Removed ${beforeCount - afterCount} Google events from ${dateStr}`);
+            }
+            // Remove empty date entries
+            if (events[dateStr].length === 0) {
+                delete events[dateStr];
+            }
+        });
+        
+        // Convert Google Calendar events to our format and add to existing events
         
         items.forEach(event => {
             // Get start and end times
@@ -416,18 +436,52 @@
                 timeStr = `${formatTime(start)} - ${formatTime(end)}`;
             }
             
+            // Try to get image from Google Calendar event description
+            let eventImage = 'img/logo.svg'; // Default fallback
+            
+            // Check for images in description (API key access can read description)
+            if (event.description) {
+                debugLog(`Checking description for ${event.summary}: ${event.description}`);
+                
+                // Look for HTML img tags in description
+                const imgMatch = event.description.match(/<img[^>]+src="([^">]+)"/i);
+                if (imgMatch && imgMatch[1]) {
+                    eventImage = imgMatch[1];
+                    debugLog(`Found image in HTML for ${event.summary}: ${eventImage}`);
+                } else {
+                    // Look for direct image URLs in description
+                    const urlMatch = event.description.match(/https?:\/\/[^\s<>]+\.(jpg|jpeg|png|gif|webp)/i);
+                    if (urlMatch && urlMatch[0]) {
+                        eventImage = urlMatch[0];
+                        debugLog(`Found image URL for ${event.summary}: ${eventImage}`);
+                    } else {
+                        // Look for Google Drive image sharing links
+                        const driveMatch = event.description.match(/https?:\/\/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+                        if (driveMatch && driveMatch[1]) {
+                            eventImage = `https://drive.google.com/uc?id=${driveMatch[1]}&export=view`;
+                            debugLog(`Found Google Drive image for ${event.summary}: ${eventImage}`);
+                        }
+                    }
+                }
+            } else {
+                debugLog(`No description found for ${event.summary}`);
+            }
+            
+            debugLog(`Event "${event.summary}" will use image: ${eventImage}`);
+            
             // Create event object
             const eventObj = {
                 id: event.id,
                 title: event.summary || 'Untitled Event',
                 time: timeStr,
                 description: event.description || 'No description available.',
-                image: 'img/events/default.jpg', // Default image
+                image: eventImage,
                 location: event.location || '',
                 link: event.htmlLink || '',
                 isAllDay: isAllDay,
                 start: start,
                 end: end,
+                source: 'google', // Mark as Google Calendar event
                 originalEvent: event // Store the original event for reference
             };
             
@@ -435,7 +489,10 @@
             if (!events[dateStr]) {
                 events[dateStr] = [];
             }
+            
+            // Since we cleared Google events above, we can directly add
             events[dateStr].push(eventObj);
+            debugLog(`Added Google event "${eventObj.title}" on ${dateStr}`);
         });
         
         // Cache the events
@@ -765,6 +822,74 @@
     }
     
     /**
+     * Create the event details modal dynamically
+     */
+    function createEventDetailsModal() {
+        // Create modal element
+        const eventDetailsModal = document.createElement('div');
+        eventDetailsModal.className = 'modal';
+        eventDetailsModal.id = 'event-details-modal';
+        eventDetailsModal.setAttribute('role', 'dialog');
+        eventDetailsModal.setAttribute('aria-modal', 'true');
+        eventDetailsModal.setAttribute('aria-labelledby', 'event-details-title');
+        
+        // Create modal content with same layout as upcoming events
+        eventDetailsModal.innerHTML = `
+            <div class="modal-content">
+                <button type="button" class="close-event-details close-modal" aria-label="Close">×</button>
+                <div class="upcoming-event primary-event" style="border: none; padding: 20px; margin: 0;">
+                    <div class="event-image-container">
+                        <img id="event-details-image" class="event-image" alt="Event image" loading="lazy">
+                    </div>
+                    <div class="event-content">
+                        <h4 id="event-details-title">Event Title</h4>
+                        <div class="event-date" id="event-details-date">Event Date</div>
+                        <div class="event-time" id="event-details-time">
+                            <i class="far fa-clock" aria-hidden="true"></i>
+                            <span>Event Time</span>
+                        </div>
+                        <div class="event-description" id="event-details-description">Event description</div>
+                        <div class="event-location" id="event-details-location" style="display: none;">
+                            <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                            Event location
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(eventDetailsModal);
+        
+        // Setup close button event
+        const closeBtn = eventDetailsModal.querySelector('.close-event-details');
+        closeBtn.addEventListener('click', closeEventDetailsModal);
+        
+        // Close on click outside
+        eventDetailsModal.addEventListener('click', function(e) {
+            if (e.target === eventDetailsModal) {
+                closeEventDetailsModal();
+            }
+        });
+        
+        // Close on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && eventDetailsModal.style.display === 'flex') {
+                closeEventDetailsModal();
+            }
+        });
+    }
+    
+    /**
+     * Close the event details modal
+     */
+    function closeEventDetailsModal() {
+        const eventDetailsModal = document.getElementById('event-details-modal');
+        if (eventDetailsModal) {
+            eventDetailsModal.style.display = 'none';
+        }
+    }
+    
+    /**
      * Close the modal
      */
     function closeModal() {
@@ -1032,16 +1157,23 @@
                 eventItem.setAttribute('role', 'button');
                 eventItem.setAttribute('aria-label', `${event.title}, ${event.time}`);
                 
-                // Create event content with icon and proper structure
+                // Get the event image with fallback
+                const eventImage = (event.image && event.image !== 'img/events/default.jpg') ? event.image : 'img/logo.svg';
+                
+                // Create event content with image and proper structure
                 eventItem.innerHTML = `
-                    <h4>${event.title}</h4>
-                    <div class="event-time">
-                        <i class="far fa-clock" aria-hidden="true"></i>
-                        <span>${event.time}</span>
+                    <div class="event-image-container">
+                        <img src="${eventImage}" alt="${event.title}" class="event-image" loading="lazy">
                     </div>
-                    <div class="event-desc">${event.description}</div>
-                    ${event.location ? `<div class="event-location"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> ${event.location}</div>` : ''}
-                    ${CONFIG.syncEnabled && event.link ? `<a href="${event.link}" class="event-link" target="_blank" rel="noopener noreferrer">View in Google Calendar</a>` : ''}
+                    <div class="event-content">
+                        <h4>${event.title}</h4>
+                        <div class="event-time">
+                            <i class="far fa-clock" aria-hidden="true"></i>
+                            <span>${event.time}</span>
+                        </div>
+                        <div class="event-desc">${event.description}</div>
+                        ${event.location ? `<div class="event-location"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> ${event.location}</div>` : ''}
+                    </div>
                 `;
                 
                 // Accessible keyboard interaction
@@ -1088,20 +1220,61 @@
      * @param {Object} event - The event object
      */
     function showEventDetails(event) {
-        // Here you can implement detailed view like expanding the event or opening another modal
-        // For now, we'll just use the existing modal's content to show more details
+        // Create or get the event details modal
+        let eventDetailsModal = document.getElementById('event-details-modal');
         
-        // If there's a link to the Google Calendar event and it's from Google Calendar
-        if (CONFIG.syncEnabled && event.link) {
-            // Open the event in Google Calendar in a new tab
-            window.open(event.link, '_blank', 'noopener,noreferrer');
-        } else {
-            // For local events, we could do something else, or even create a new modal
-            debugLog('Event details clicked: ' + event.title);
-            
-            // For now, we'll keep using the existing behavior from your code
-            console.log('Event details:', event);
+        if (!eventDetailsModal) {
+            createEventDetailsModal();
+            eventDetailsModal = document.getElementById('event-details-modal');
         }
+        
+        // Get modal elements
+        const modalTitle = document.getElementById('event-details-title');
+        const modalImage = document.getElementById('event-details-image');
+        const modalDate = document.getElementById('event-details-date');
+        const modalTime = document.getElementById('event-details-time');
+        const modalDescription = document.getElementById('event-details-description');
+        const modalLocation = document.getElementById('event-details-location');
+        
+        // Set modal content
+        modalTitle.textContent = event.title;
+        modalImage.src = (event.image && event.image !== 'img/events/default.jpg') ? event.image : 'img/logo.svg';
+        modalImage.alt = event.title;
+        
+        // Set date if available (format: "Thursday, September 4")
+        if (event.dayName && event.monthName && event.dayNumber) {
+            modalDate.textContent = `${event.dayName}, ${event.monthName} ${event.dayNumber}`;
+            modalDate.style.display = 'block';
+        } else {
+            modalDate.style.display = 'none';
+        }
+        
+        modalTime.innerHTML = `<i class="far fa-clock" aria-hidden="true"></i> ${event.time}`;
+        modalDescription.textContent = event.description;
+        
+        // Handle location if available
+        if (event.location && event.location.trim()) {
+            modalLocation.innerHTML = `<i class="fas fa-map-marker-alt" aria-hidden="true"></i> ${event.location}`;
+            modalLocation.style.display = 'block';
+        } else {
+            modalLocation.style.display = 'none';
+        }
+        
+        // Close the day modal if it's open
+        if (dayModal && dayModal.style.display === 'flex') {
+            dayModal.style.display = 'none';
+        }
+        
+        // Show the modal
+        eventDetailsModal.style.display = 'flex';
+        
+        // Focus on close button for accessibility
+        setTimeout(() => {
+            const closeBtn = eventDetailsModal.querySelector('.close-event-details');
+            if (closeBtn) closeBtn.focus();
+        }, 100);
+        
+        debugLog('Event details modal shown for: ' + event.title);
     }
     
     /**
@@ -1240,25 +1413,35 @@
                 const eventDate = formatEventDate(event);
                 const isPrimary = index === 0; // First event is primary
                 
-                // For events page, show full day name and clean date format
+                // For events page, use image instead of date badge
                 const dayLabel = event.isToday ? 'Today' : 
                                event.isTomorrow ? 'Tomorrow' : 
                                event.dayName; // Full day name (e.g., "Friday")
                 
+                const dateText = `${event.monthName} ${event.dayNumber}`;
+                const eventImage = (event.image && event.image !== 'img/events/default.jpg') ? event.image : 'img/logo.svg';
+                
                 eventsHtml += `
                     <div class="upcoming-event ${isPrimary ? 'primary-event' : 'secondary-event'}" data-event-date="${event.dateString}">
-                        <div class="event-date-badge">
-                            <div class="date-label">${dayLabel}</div>
-                            <div class="date-full">${event.monthName} ${event.dayNumber}</div>
+                        <div class="event-image-container">
+                            <img src="${eventImage}" alt="${event.title}" class="event-image" loading="lazy">
                         </div>
                         <div class="event-content">
                             <h4>${event.title}</h4>
+                            <div class="event-date">${dateText}</div>
                             <div class="event-time">
                                 <i class="far fa-clock" aria-hidden="true"></i>
                                 ${event.time}
                             </div>
-                            <p>${event.description}</p>
                             ${event.recurring ? '<span class="recurring-badge">Weekly</span>' : ''}
+                        </div>
+                        <div class="event-action">
+                            <button class="btn btn-sm more-info-btn" 
+                                    data-event-date="${event.dateString}" 
+                                    data-event-title="${event.title}"
+                                    aria-label="More info about ${event.title}">
+                                More Info
+                            </button>
                         </div>
                     </div>
                 `;
@@ -1269,6 +1452,7 @@
             try {
                 container.innerHTML = eventsHtml;
                 setupEventClickHandlers(container);
+                setupMoreInfoButtons(); // Also setup More Info buttons for events page
             } catch (e) {
                 debugLog('Error updating upcoming events: ' + e.message, 'error');
                 container.innerHTML = '<p>Error loading event information</p>';
@@ -1291,23 +1475,48 @@
         moreInfoButtons.forEach(button => {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
+                e.stopPropagation(); // Prevent event bubbling to parent event container
                 
                 const eventDate = this.getAttribute('data-event-date');
                 const eventTitle = this.getAttribute('data-event-title');
                 
-                // Navigate to events page
-                if (window.SugarBowlApp && typeof window.SugarBowlApp.navigateTo === 'function') {
-                    window.SugarBowlApp.navigateTo('events');
-                } else {
-                    // Fallback navigation
-                    const eventLink = document.querySelector('.main-nav a[href="#events"]');
-                    if (eventLink) eventLink.click();
-                }
+                // Check if we're already on the events page
+                const eventsPage = document.getElementById('events');
+                const isOnEventsPage = eventsPage && eventsPage.classList.contains('active-page');
                 
-                // After a short delay, show the specific event
-                setTimeout(() => {
-                    showSpecificEvent(eventDate, eventTitle);
-                }, 300);
+                if (isOnEventsPage) {
+                    // Already on events page, show modal directly
+                    if (events[eventDate]) {
+                        const eventData = events[eventDate].find(event => event.title === eventTitle);
+                        if (eventData) {
+                            // Add date information to the event data
+                            const [year, month, day] = eventDate.split('-').map(Number);
+                            const dateObj = new Date(year, month - 1, day);
+                            const eventWithDate = {
+                                ...eventData,
+                                dateString: eventDate,
+                                dayName: dayOfWeekNames[dateObj.getDay()],
+                                monthName: monthNames[dateObj.getMonth()],
+                                dayNumber: dateObj.getDate()
+                            };
+                            showEventDetails(eventWithDate);
+                        }
+                    }
+                } else {
+                    // Navigate to events page first
+                    if (window.SugarBowlApp && typeof window.SugarBowlApp.navigateTo === 'function') {
+                        window.SugarBowlApp.navigateTo('events');
+                    } else {
+                        // Fallback navigation
+                        const eventLink = document.querySelector('.main-nav a[href="#events"]');
+                        if (eventLink) eventLink.click();
+                    }
+                    
+                    // After a short delay, show the specific event
+                    setTimeout(() => {
+                        showSpecificEvent(eventDate, eventTitle);
+                    }, 300);
+                }
                 
                 // Track analytics
                 if (window.SugarBowlAnalytics) {
@@ -1330,8 +1539,23 @@
                 const eventDate = this.getAttribute('data-event-date');
                 const eventTitle = this.querySelector('h4').textContent;
                 
-                // Already on events page, show event immediately
-                showSpecificEvent(eventDate, eventTitle);
+                // Find the event data and show details modal directly
+                if (events[eventDate]) {
+                    const eventData = events[eventDate].find(event => event.title === eventTitle);
+                    if (eventData) {
+                        // Add date information to the event data
+                        const [year, month, day] = eventDate.split('-').map(Number);
+                        const dateObj = new Date(year, month - 1, day);
+                        const eventWithDate = {
+                            ...eventData,
+                            dateString: eventDate,
+                            dayName: dayOfWeekNames[dateObj.getDay()],
+                            monthName: monthNames[dateObj.getMonth()],
+                            dayNumber: dateObj.getDate()
+                        };
+                        showEventDetails(eventWithDate);
+                    }
+                }
                 
                 // Track analytics
                 if (window.SugarBowlAnalytics) {
@@ -1459,11 +1683,25 @@
      * Force refresh of calendar data
      */
     function refreshCalendarData() {
-        if (CONFIG.syncEnabled) {
-            showLoading(true);
-            fetchGoogleCalendarEvents();
+        if (CONFIG.syncEnabled && CONFIG.apiKey && CONFIG.apiKey !== 'YOUR_API_KEY_HERE') {
+            // Check if Google API is already loaded
+            if (window.gapi && window.gapi.client && window.gapi.client.calendar) {
+                showLoading(true);
+                fetchGoogleCalendarEvents();
+            } else {
+                // API not loaded yet, just render local events and let the API load in background
+                debugLog('Google API not loaded yet, showing local events first');
+                renderCalendar();
+                updateTodayEvent();
+                
+                // Try to load the API in the background
+                if (!window.gapi) {
+                    loadGoogleApi();
+                }
+            }
         } else {
             // Just re-render with local data
+            debugLog('Using local events only (no API key or sync disabled)');
             renderCalendar();
             updateTodayEvent();
         }
@@ -1495,6 +1733,16 @@
     // Export public API
     window.SugarBowlCalendar = {
         refresh: refreshCalendarData,
+        clearCache: function() {
+            localStorage.removeItem('sugarbowl_events_cache');
+            debugLog('Cache cleared manually');
+        },
+        forceRefresh: function() {
+            localStorage.removeItem('sugarbowl_events_cache');
+            events = JSON.parse(JSON.stringify(localEvents)); // Reset to local events
+            addRecurringEvents(); // Add recurring events
+            refreshCalendarData(); // Fetch fresh Google Calendar data
+        },
         goToMonth: function(month, year) {
             currentMonth = month;
             currentYear = year;
