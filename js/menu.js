@@ -95,6 +95,12 @@ async function initBurgerSpecial() {
             if (currentBurgerEl) {
                 currentBurgerEl.innerHTML = '<p class="no-special">Check back soon for our next special!</p>';
             }
+            // Reset home page image to default
+            const homeBurgerImage = document.getElementById('home-burger-image');
+            if (homeBurgerImage) {
+                homeBurgerImage.src = 'img/burger1.webp';
+                homeBurgerImage.alt = 'Featured weekly burger special';
+            }
             return;
         }
 
@@ -164,6 +170,15 @@ async function initBurgerSpecial() {
             `;
         }
 
+        // Update home page burger image to match the current burger from S3
+        const homeBurgerImage = document.getElementById('home-burger-image');
+        if (homeBurgerImage && currentBurger.imageUrl) {
+            homeBurgerImage.src = currentBurger.imageUrl;
+            homeBurgerImage.alt = `${currentBurger.name} - Featured weekly burger special`;
+            // Remove the static data-webp-src since we're using dynamic S3 images
+            homeBurgerImage.removeAttribute('data-webp-src');
+        }
+
         console.log('Burger special loaded successfully');
     } catch (error) {
         console.error('Error loading burger special:', error);
@@ -172,6 +187,13 @@ async function initBurgerSpecial() {
         const errorMessage = '<p class="error-message">Unable to load burger special. Please try again later.</p>';
         if (burgerSpotlightEl) burgerSpotlightEl.innerHTML = errorMessage;
         if (currentBurgerEl) currentBurgerEl.innerHTML = errorMessage;
+        
+        // Reset home page image to default on error
+        const homeBurgerImage = document.getElementById('home-burger-image');
+        if (homeBurgerImage) {
+            homeBurgerImage.src = 'img/burger1.webp';
+            homeBurgerImage.alt = 'Featured weekly burger special';
+        }
     }
 }
 

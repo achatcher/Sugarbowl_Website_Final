@@ -1240,10 +1240,15 @@
                 const eventDate = formatEventDate(event);
                 const isPrimary = index === 0; // First event is primary
                 
+                // For events page, show full day name and clean date format
+                const dayLabel = event.isToday ? 'Today' : 
+                               event.isTomorrow ? 'Tomorrow' : 
+                               event.dayName; // Full day name (e.g., "Friday")
+                
                 eventsHtml += `
                     <div class="upcoming-event ${isPrimary ? 'primary-event' : 'secondary-event'}" data-event-date="${event.dateString}">
                         <div class="event-date-badge">
-                            <div class="date-label">${eventDate}</div>
+                            <div class="date-label">${dayLabel}</div>
                             <div class="date-full">${event.monthName} ${event.dayNumber}</div>
                         </div>
                         <div class="event-content">
