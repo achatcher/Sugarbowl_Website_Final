@@ -201,6 +201,16 @@
         // Only perform if not on a touch device
         if (window.matchMedia('(hover: none)').matches) return;
         
+        // For burger-special page, focus on the page heading instead to prevent scrolling down
+        if (page.id === 'burger-special') {
+            const heading = page.querySelector('h2');
+            if (heading) {
+                heading.setAttribute('tabindex', '-1');
+                heading.focus();
+                return;
+            }
+        }
+        
         const focusableElements = page.querySelectorAll(
             'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
         );

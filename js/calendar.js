@@ -1579,33 +1579,42 @@
      * Show specific event modal when navigating from home page
      */
     function showSpecificEvent(eventDate, eventTitle) {
-        // Find the day cell for this date
-        const dayCells = document.querySelectorAll('.calendar-day');
-        
-        dayCells.forEach(cell => {
-            if (cell.dataset.date === eventDate) {
-                // Simulate click on the day to show modal
-                cell.click();
+        // Find the event data and show the event details modal directly
+        if (events[eventDate]) {
+            const eventData = events[eventDate].find(event => event.title === eventTitle);
+            if (eventData) {
+                // Add date information to the event data
+                const [year, month, day] = eventDate.split('-').map(Number);
+                const dateObj = new Date(year, month - 1, day);
+                const eventWithDate = {
+                    ...eventData,
+                    dateString: eventDate,
+                    dayName: dayOfWeekNames[dateObj.getDay()],
+                    monthName: monthNames[dateObj.getMonth()],
+                    dayNumber: dateObj.getDate()
+                };
+                
+                // Navigate to correct month if needed
+                if (dateObj.getMonth() !== currentMonth || dateObj.getFullYear() !== currentYear) {
+                    currentMonth = dateObj.getMonth();
+                    currentYear = dateObj.getFullYear();
+                    renderCalendar();
+                }
+                
+                // Show event details modal directly (not the day modal)
+                showEventDetails(eventWithDate);
                 return;
             }
-        });
+        }
         
-        // If day cell not found (different month), navigate to correct month first
+        // Fallback: if event not found, still navigate to correct month
         const [year, month, day] = eventDate.split('-').map(Number);
         const targetDate = new Date(year, month - 1, day);
         
-        if (window.SugarBowlCalendar && window.SugarBowlCalendar.goToMonth) {
-            window.SugarBowlCalendar.goToMonth(month - 1, year);
-            
-            // Wait for calendar to render, then show the event
-            setTimeout(() => {
-                const updatedCells = document.querySelectorAll('.calendar-day');
-                updatedCells.forEach(cell => {
-                    if (cell.dataset.date === eventDate) {
-                        cell.click();
-                    }
-                });
-            }, 500);
+        if (targetDate.getMonth() !== currentMonth || targetDate.getFullYear() !== currentYear) {
+            currentMonth = targetDate.getMonth();
+            currentYear = targetDate.getFullYear();
+            renderCalendar();
         }
     }
     
