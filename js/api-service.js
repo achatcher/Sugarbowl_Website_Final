@@ -12,55 +12,42 @@ class ApiService {
     }
 
     async makeGraphQLRequest(query, variables = {}) {
-    console.log('🔍 Making GraphQL Request...');
-    console.log('📝 Query:', query);
-    console.log('📋 Variables:', variables);
-    console.log('🔑 API Key:', this.apiKey);
-   
-    try {
-        const requestBody = JSON.stringify({
-            query: query,
-            variables: variables
-        });
-       
-        console.log('📦 Request Body:', requestBody);
-       
-        const response = await fetch(this.graphqlEndpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': this.apiKey
-            },
-            body: requestBody
-        });
-
-        console.log('📊 Response Status:', response.status);
-        console.log('📊 Response OK:', response.ok);
-
-        const responseText = await response.text();
-        console.log('📄 Raw Response:', responseText);
-
-        let data;
         try {
-            data = JSON.parse(responseText);
-        } catch (parseError) {
-            console.error('❌ JSON Parse Error:', parseError);
-            throw new Error(`Invalid JSON response: ${responseText}`);
-        }
+            const requestBody = JSON.stringify({
+                query: query,
+                variables: variables
+            });
+           
+            const response = await fetch(this.graphqlEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': this.apiKey
+                },
+                body: requestBody
+            });
 
-        console.log('📄 Parsed Response:', data);
+            const responseText = await response.text();
+            let data;
+            
+            try {
+                data = JSON.parse(responseText);
+            } catch (parseError) {
+                console.error('❌ JSON Parse Error:', parseError);
+                throw new Error(`Invalid JSON response: ${responseText}`);
+            }
 
-        if (data.errors) {
-            console.error('❌ GraphQL Errors:', data.errors);
-            throw new Error(`GraphQL error: ${JSON.stringify(data.errors)}`);
+            if (data.errors) {
+                console.error('❌ GraphQL Errors:', data.errors);
+                throw new Error(`GraphQL error: ${JSON.stringify(data.errors)}`);
+            }
+           
+            return data;
+        } catch (error) {
+            console.error('💥 Request Failed:', error);
+            throw error;
         }
-       
-        return data;
-    } catch (error) {
-        console.error('💥 Request Failed:', error);
-        throw error;
     }
-}
 
     async getCurrentBurger() {
         const cacheKey = 'current-burger';
@@ -95,9 +82,9 @@ class ApiService {
             
             let burger = result.data.getBurger;
             
-            if (burger && burger.imageKey && !burger.imageUrl) {
-                burger.imageUrl = `https://sugarbowl-admin-imagesc1ae6-dev.s3.us-east-2.amazonaws.com/public/${burger.imageKey}`;
-            }
+            // NOTE: We no longer hardcode the S3 URL here. 
+            // The menu.js module uses SugarBowlConfig.aws.publicUrl + imageKey 
+            // to build a permanent link. This keeps this service focused on data fetching.
 
             if (burger) {
                 this.cache.set(cacheKey, { data: burger, timestamp: Date.now() });
