@@ -10,6 +10,6 @@ window.SugarBowlConfig = {
     aws: {
         bucket: 'sugarbowl-admin-imagesc1ae6-dev',
         region: 'us-east-2',
-        publicUrl: 'https://sugarbowl-admin-imagesc1ae6-dev.s3.us-east-2.amazonaws.com/burgers/'
+        publicUrl: 'https://sugarbowl-admin-imagesc1ae6-dev.s3.us-east-2.amazonaws.com/'
     }
 };
