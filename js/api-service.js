@@ -7,7 +7,7 @@ class ApiService {
     constructor() {
         this.cache = new Map();
         this.cacheTimeout = 5 * 60 * 1000; 
-        this.graphqlEndpoint = 'https://px665cw5o5dwlnwqbj45ea6wai.appsync-api.us-east-2.amazonaws.com/graphql';
+        this.graphqlEndpoint = 'https://364vw33yefgirm4lhvwegdop4a.appsync-api.us-east-2.amazonaws.com/graphql';
         this.apiKey = 'da2-5rhu27fnxvamrkkd4cewihkjki'; 
     }
 
